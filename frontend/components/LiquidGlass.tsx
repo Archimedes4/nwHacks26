@@ -1,44 +1,89 @@
 import * as React from "react";
-import { View, Text, Pressable, StyleSheet, LayoutChangeEvent, Dimensions } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator, BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { View, Text, Pressable, StyleSheet, LayoutChangeEvent } from "react-native";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
 } from "react-native-reanimated";
 
-const Tab = createBottomTabNavigator();
+export type LiquidGlassTabItem = {
+  key: string;
+  label: string;
+  icon?: React.ReactNode;
+  onPress?: () => void;
+};
 
-function Screen({ title }: { title: string }) {
-  return (
-    <View style={styles.screen}>
-      <Text style={styles.screenText}>{title}</Text>
-    </View>
-  );
-}
+type LiquidGlassTabBarProps = Partial<BottomTabBarProps> & {
+  tabs?: LiquidGlassTabItem[];
+  activeIndex?: number;
+  onChange?: (index: number) => void;
+};
 
 /**
  * Liquid-glass tab bar:
  * - Glass background: BlurView + translucent border
  * - Liquid indicator: animated pill that stretches toward the next tab then settles
  */
-function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export default function LiquidGlassTabBar({
+  state,
+  descriptors,
+  navigation,
+  tabs,
+  activeIndex,
+  onChange,
+}: LiquidGlassTabBarProps) {
+  const derivedTabs = React.useMemo<LiquidGlassTabItem[]>(() => {
+    if (state && descriptors) {
+      return state.routes.map((route) => {
+        const { options } = descriptors[route.key];
+        const label =
+          options.tabBarLabel !== undefined
+            ? options.tabBarLabel
+            : options.title !== undefined
+              ? options.title
+              : route.name;
+        const icon =
+          typeof options.tabBarIcon === "function"
+            ? options.tabBarIcon({
+                focused: state.index === state.routes.findIndex((r) => r.key === route.key),
+                color: "white",
+                size: 22,
+              })
+            : undefined;
+        return {
+          key: route.key,
+          label: String(label),
+          icon,
+        };
+      });
+    }
+    return tabs ?? [];
+  }, [state, descriptors, tabs]);
+
+  const [internalIndex, setInternalIndex] = React.useState(0);
+  const resolvedIndex = state?.index ?? activeIndex ?? internalIndex;
+
   const [layouts, setLayouts] = React.useState<{ x: number; width: number }[]>(
-    Array(state.routes.length).fill({ x: 0, width: 0 })
+    Array(derivedTabs.length).fill({ x: 0, width: 0 })
   );
 
   const indicatorX = useSharedValue(0);
   const indicatorW = useSharedValue(56);
   const squish = useSharedValue(1);
 
+  React.useEffect(() => {
+    setLayouts(Array(derivedTabs.length).fill({ x: 0, width: 0 }));
+    if (resolvedIndex >= derivedTabs.length) {
+      setInternalIndex(0);
+    }
+  }, [derivedTabs.length, resolvedIndex]);
+
   // When active tab changes, animate indicator to the correct position
   React.useEffect(() => {
-    const active = state.index;
-    const l = layouts[active];
+    const l = layouts[resolvedIndex];
     if (!l || l.width === 0) return;
 
     const targetW = Math.max(56, l.width * 0.62);
@@ -73,7 +118,7 @@ function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps
     });
 
     // initialize indicator at first render
-    if (idx === state.index) {
+    if (idx === resolvedIndex) {
       const targetW = Math.max(56, width * 0.62);
       indicatorW.value = targetW;
       indicatorX.value = x + (width - targetW) / 2;
@@ -99,39 +144,40 @@ function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps
 
         {/* Tabs */}
         <View style={styles.row}>
-          {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key];
-            const label =
-              options.tabBarLabel !== undefined
-                ? options.tabBarLabel
-                : options.title !== undefined
-                  ? options.title
-                  : route.name;
-
-            const isFocused = state.index === index;
-
+          {derivedTabs.map((tab, index) => {
+            const isFocused = resolvedIndex === index;
             const onPress = () => {
-              const event = navigation.emit({
-                type: "tabPress",
-                target: route.key,
-                canPreventDefault: true,
-              });
+              if (state && navigation) {
+                const route = state.routes[index];
+                const event = navigation.emit({
+                  type: "tabPress",
+                  target: route.key,
+                  canPreventDefault: true,
+                });
 
-              if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(route.name);
+                if (!isFocused && !event.defaultPrevented) {
+                  navigation.navigate(route.name);
+                }
+              } else {
+                setInternalIndex(index);
+                onChange?.(index);
+                tab.onPress?.();
               }
             };
 
             return (
               <Pressable
-                key={route.key}
+                key={tab.key}
                 onPress={onPress}
                 onLayout={onItemLayout(index)}
                 style={styles.item}
               >
-                <Text style={[styles.label, isFocused && styles.labelFocused]}>
-                  {String(label)}
-                </Text>
+                <View style={styles.itemContent}>
+                  {tab.icon ? <View style={styles.iconWrap}>{tab.icon}</View> : null}
+                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
+                    {tab.label}
+                  </Text>
+                </View>
               </Pressable>
             );
           })}
@@ -166,6 +212,15 @@ const styles = StyleSheet.create({
   item: {
     flex: 1,
     height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  itemContent: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+  },
+  iconWrap: {
     alignItems: "center",
     justifyContent: "center",
   },

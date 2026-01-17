@@ -1,18 +1,13 @@
 import { View, Text, useWindowDimensions, Pressable } from 'react-native'
 import React from 'react'
 import { Colors } from '../types';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import {Image} from "expo-image";
-import LiquidGlassTabBar from '@/components/LiquidGlass';
-import LandingPage from '@/components/LandingPage';
+import { AdviceIcon, SleepIcon } from './Icons';
 
 export default function index() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const {width, height} = useWindowDimensions();
-
-  if (true) {
-    return <LandingPage />
-  }
 
   return (
     <View style={{width, height, backgroundColor: Colors.primary}}>
@@ -34,12 +29,24 @@ export default function index() {
             </Pressable>
           </Link>
         </View>
-        <Text>Your're recent advice!</Text>
-        <Text>Why choose Somnia</Text>
+        <View style={{backgroundColor: Colors.secondary, marginTop: height * 0.3}}>
+        <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 30}}>We&apos;re here to help you fix your sleep!</Text>
+        <View style={{flexDirection: 'row'}}>
+          <View>
+            <AdviceIcon width={height * 0.2} height={height * 0.2} color={Colors.light}/>
+            <Text>Sleep Advice</Text>
+          </View>
+          <View>
+            <SleepIcon width={height * 0.2} height={height * 0.2} color={Colors.light} />
+            <Text>Sleep Tracking</Text>
+          </View>
+          <View>
+            
+          </View>
+        </View>
+        <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 30}}>Why choose Somnia</Text>
         <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>Our model built from the ground up gives you advice that you can't find anywhere else. Quickly enter small amounts of information and get pointed to the right resources to help you fix your sleep. Best part, this is all free, no sign up needed.</Text>
-        {(width < 700) &&
-          <LiquidGlassTabBar />
-        }
+        </View>
       </View>
     </View>
   )

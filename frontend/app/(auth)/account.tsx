@@ -4,7 +4,7 @@ import React from 'react'
 export default function account() {
   return (
     <View>
-      <Text>account</Text>
+      <Text>Account</Text>
     </View>
   )
 }

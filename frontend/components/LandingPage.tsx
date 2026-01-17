@@ -55,12 +55,12 @@ export default function index() {
         <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20, marginHorizontal: 30}}>Our model built from the ground up gives you advice that you can't find anywhere else. Quickly enter small amounts of information and get pointed to the right resources to help you fix your sleep. Best part, this is all free, no sign up needed.</Text>
         </View>
         <View style={{borderRadius: 15, padding: 15, borderWidth: 2, marginHorizontal: 30, borderColor: Colors.light, marginTop: 15}}>
-          <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>Somina, made me have a good sleep during nwHacks 26. It helped me calm down and stay focused.</Text>
+          <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>Somnia, made me have a good sleep during nwHacks 26. It helped me calm down and stay focused.</Text>
           <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>- Andrew Mainella</Text>
         </View>
         <View style={{borderRadius: 15, padding: 15, borderWidth: 2, marginHorizontal: 30, borderColor: Colors.light, marginTop: 15}}>
-          <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>Somina, made me have a good sleep during nwHacks 26. It helped me calm down and stay focused.</Text>
-          <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>- Andrew Mainella</Text>
+          <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>This app called Somnia really made my sleep better. Not only does it help me relax and go to sleep, it also helps me feel better the following day. 10/10 Recommended.</Text>
+          <Text style={{color: Colors.light, fontFamily: "Playpen", fontSize: 20}}>- Jason Shin</Text>
         </View>
       </View>
     </ScrollView>

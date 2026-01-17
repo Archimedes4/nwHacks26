@@ -113,7 +113,7 @@ print("Encoded valid shape:", X_valid.shape)
 
 # model versions
 VERSION = "rf_1"
-LOAD_FROM_DISK = False # if set to true, will load pretrained model so you don't have to retrain
+LOAD_FROM_DISK = True # if set to true, will load pretrained model so you don't have to retrain
 MODEL_PATH = f"model/{VERSION}.pkl" # otherwise will train a model and save (and overwrite) to path
 
 if LOAD_FROM_DISK and os.path.exists(MODEL_PATH):

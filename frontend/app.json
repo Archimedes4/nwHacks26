@@ -42,9 +42,12 @@
       [
         "expo-font",
         {
-          "fonts":["./assets/fonts/Pacifico/Pacifico-Regular.ttf"]
+          "fonts": [
+            "./assets/fonts/Pacifico/Pacifico-Regular.ttf"
+          ]
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,

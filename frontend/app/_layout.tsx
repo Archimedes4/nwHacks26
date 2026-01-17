@@ -11,6 +11,7 @@ export const unstable_settings = {
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     Pacifico: require('../assets/fonts/Pacifico/Pacifico-Regular.ttf'),
+    Playpen: require("../assets/fonts/Playpen_Sans/PlaypenSans-VariableFont_wght.ttf")
   });
 
   useEffect(() => {

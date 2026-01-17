@@ -5,3 +5,10 @@ export enum Colors {
   dark = "#3f3f37",
   light = "#efebce"
 }
+
+export enum loadingStateEnum {
+  loading,
+  success,
+  failed,
+  notStarted
+}

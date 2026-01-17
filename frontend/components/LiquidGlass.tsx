@@ -37,7 +37,7 @@ export default function LiquidGlassTabBar({
 }: LiquidGlassTabBarProps) {
   const derivedTabs = React.useMemo<LiquidGlassTabItem[]>(() => {
     if (state && descriptors) {
-      return state.routes.map((route) => {
+      return state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
@@ -48,7 +48,7 @@ export default function LiquidGlassTabBar({
         const icon =
           typeof options.tabBarIcon === "function"
             ? options.tabBarIcon({
-                focused: state.index === state.routes.findIndex((r) => r.key === route.key),
+                focused: state.index === index,
                 color: "white",
                 size: 22,
               })
@@ -106,8 +106,7 @@ export default function LiquidGlassTabBar({
     squish.value = withTiming(0.92, { duration: 120 }, () => {
       squish.value = withSpring(1, { damping: 14, stiffness: 220 });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.index, layouts]);
+  }, [layouts, resolvedIndex]);
 
   const onItemLayout = (idx: number) => (e: LayoutChangeEvent) => {
     const { x, width } = e.nativeEvent.layout;

@@ -42,14 +42,14 @@ export default function Login() {
       <TextInput
         value={email}
         onChangeText={setEmail}
-        style={{fontFamily: "Playpen", backgroundColor: Colors.secondary, borderRadius: 15, padding: 10, color: Colors.light}}
+        style={{fontFamily: "FacultyGlyphic", backgroundColor: Colors.secondary, borderRadius: 15, padding: 10, color: Colors.light}}
         placeholder='Email'
         editable={!isLoading}
       />
       <TextInput
         value={password}
         onChangeText={setPassword}
-        style={{fontFamily: "Playpen", backgroundColor: Colors.secondary, borderRadius: 15, padding: 10, paddingTop: 15, color: Colors.light}}
+        style={{fontFamily: "FacultyGlyphic", backgroundColor: Colors.secondary, borderRadius: 15, padding: 10, paddingTop: 15, color: Colors.light}}
         placeholder='Password'
         secureTextEntry
         editable={!isLoading}

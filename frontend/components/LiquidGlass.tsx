@@ -29,57 +29,18 @@ type LiquidGlassTabBarProps = Partial<BottomTabBarProps> & {
  */
 export default function LiquidGlassTabBar({
   state,
-  descriptors,
   navigation,
-  tabs,
   activeIndex,
   onChange,
 }: LiquidGlassTabBarProps) {
-  const derivedTabs = React.useMemo<LiquidGlassTabItem[]>(() => {
-    if (state && descriptors) {
-      return state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-              ? options.title
-              : route.name;
-        const icon =
-          typeof options.tabBarIcon === "function"
-            ? options.tabBarIcon({
-                focused: state.index === index,
-                color: "white",
-                size: 22,
-              })
-            : undefined;
-        return {
-          key: route.key,
-          label: String(label),
-          icon,
-        };
-      });
-    }
-    return tabs ?? [];
-  }, [state, descriptors, tabs]);
+
 
   const [internalIndex, setInternalIndex] = React.useState(0);
   const resolvedIndex = state?.index ?? activeIndex ?? internalIndex;
 
-  const [layouts, setLayouts] = React.useState<{ x: number; width: number }[]>(
-    Array(derivedTabs.length).fill({ x: 0, width: 0 })
-  );
-
   const indicatorX = useSharedValue(0);
   const indicatorW = useSharedValue(56);
   const squish = useSharedValue(1);
-
-  React.useEffect(() => {
-    setLayouts(Array(derivedTabs.length).fill({ x: 0, width: 0 }));
-    if (resolvedIndex >= derivedTabs.length) {
-      setInternalIndex(0);
-    }
-  }, [derivedTabs.length, resolvedIndex]);
 
   // When active tab changes, animate indicator to the correct position
   React.useEffect(() => {
@@ -108,21 +69,21 @@ export default function LiquidGlassTabBar({
     });
   }, [layouts, resolvedIndex]);
 
-  const onItemLayout = (idx: number) => (e: LayoutChangeEvent) => {
-    const { x, width } = e.nativeEvent.layout;
-    setLayouts((prev) => {
-      const next = [...prev];
-      next[idx] = { x, width };
-      return next;
-    });
+  // const onItemLayout = (idx: number) => (e: LayoutChangeEvent) => {
+  //   const { x, width } = e.nativeEvent.layout;
+  //   setLayouts((prev) => {
+  //     const next = [...prev];
+  //     next[idx] = { x, width };
+  //     return next;
+  //   });
 
-    // initialize indicator at first render
-    if (idx === resolvedIndex) {
-      const targetW = Math.max(56, width * 0.62);
-      indicatorW.value = targetW;
-      indicatorX.value = x + (width - targetW) / 2;
-    }
-  };
+  //   // initialize indicator at first render
+  //   if (idx === resolvedIndex) {
+  //     const targetW = Math.max(56, width * 0.62);
+  //     indicatorW.value = targetW;
+  //     indicatorX.value = x + (width - targetW) / 2;
+  //   }
+  // };
 
   const indicatorStyle = useAnimatedStyle(() => {
     return {
@@ -143,43 +104,7 @@ export default function LiquidGlassTabBar({
 
         {/* Tabs */}
         <View style={styles.row}>
-          {derivedTabs.map((tab, index) => {
-            const isFocused = resolvedIndex === index;
-            const onPress = () => {
-              if (state && navigation) {
-                const route = state.routes[index];
-                const event = navigation.emit({
-                  type: "tabPress",
-                  target: route.key,
-                  canPreventDefault: true,
-                });
-
-                if (!isFocused && !event.defaultPrevented) {
-                  navigation.navigate(route.name);
-                }
-              } else {
-                setInternalIndex(index);
-                onChange?.(index);
-                tab.onPress?.();
-              }
-            };
-
-            return (
-              <Pressable
-                key={tab.key}
-                onPress={onPress}
-                onLayout={onItemLayout(index)}
-                style={styles.item}
-              >
-                <View style={styles.itemContent}>
-                  {tab.icon ? <View style={styles.iconWrap}>{tab.icon}</View> : null}
-                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
-                    {tab.label}
-                  </Text>
-                </View>
-              </Pressable>
-            );
-          })}
+          
         </View>
       </BlurView>
     </View>

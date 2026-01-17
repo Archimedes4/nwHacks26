@@ -7,12 +7,12 @@ import LiquidGlassTabBar from '@/components/LiquidGlass';
 import LandingPage from '@/components/LandingPage';
 import { AdviceIcon, HomeIcon, PersonIcon, SleepIcon } from '@/components/Icons';
 
-export default function index() {
+export default function Index() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const {width, height} = useWindowDimensions();
   const [activeTab, setActiveTab] = useState(0);
 
-  if (false) {
+  if (true) {
     return <LandingPage />
   }
 

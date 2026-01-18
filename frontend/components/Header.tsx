@@ -1,5 +1,4 @@
-// typescript
-import { View, Text, Pressable, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, useWindowDimensions, Image } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
 import { Colors, DEFAULT_FONT } from "@/types";
@@ -28,11 +27,19 @@ export default function Header() {
                 height: HEADER_BAR_HEIGHT,
             }}
         >
-            {/* Left: logo (farthest left) */}
+            {/* Left: logo + brand */}
             <Link href={"/"} asChild>
-                <Text style={{ fontFamily: "Pacifico", color: Colors.light, fontSize: 45, marginTop: 10 }}>
-                    Somnia
-                </Text>
+                <Pressable style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Image
+                        source={require("@/assets/images/splash-icon.png")}
+                        style={{ width: 40, height: 40, marginRight: 8 }}
+                        resizeMode="contain"
+                        accessibilityLabel="Somnia logo"
+                    />
+                    <Text style={{ fontFamily: "Pacifico", color: Colors.light, fontSize: 45 }}>
+                        Somnia
+                    </Text>
+                </Pressable>
             </Link>
 
             {/* Spacer to push actions to the right */}

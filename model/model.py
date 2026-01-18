@@ -12,7 +12,7 @@ from sklearn.metrics import accuracy_score
 
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 
 import joblib
 
@@ -121,6 +121,14 @@ if LOAD_FROM_DISK and os.path.exists(MODEL_PATH):
     model = joblib.load(MODEL_PATH)
 else:
     print("Training a new model...")
+
+    base_mlp = MLPRegressor(
+        n_estimators=300,
+        n_jobs=-1,
+        oob_score=True,
+        random_state=42,
+        bootstrap=True,
+    )
 
     base_rf = RandomForestRegressor(
         n_estimators=300,

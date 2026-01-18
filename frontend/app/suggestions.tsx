@@ -29,18 +29,21 @@ type SleepRecord = {
     restingHeartrate: number | null;
     dailySteps: number | null;
     stressLevel: number | null;
-    sleepQuality: number | null;
+    sleepQuality: number;
     gender: string | null;
 };
 
 const GEMINI_API_KEY = 'AIzaSyCK14fbp6iiBUUWk_B9bU2C5eknFZHVJsM';
+const OPENROUTER_API_KEY = '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';
+const SITE_URL = "https://somnia-e46dc.firebaseapp.com/account"
+const SITE_NAME = 'Somnia';
 
 async function generateGeminiSuggestions(record: SleepRecord): Promise<string[]> {
     const prompt = `
 You are a sleep health assistant.
-Generate 3–5 short, actionable sleep improvement suggestions.
+Generate 3-5 short, actionable sleep improvement suggestions.
 Use bullet points. Be concise. No disclaimers.
-Don't use any markdown symbols that can not be rendered as simple text
+Don't use any markdown symbols that can not be rendered as simple text.
 Sleep data:
 - Sleep quality: ${record.sleepQuality ?? 'unknown'}
 - Sleep duration (hours): ${record.sleepDuration ?? 'unknown'}
@@ -49,33 +52,37 @@ Sleep data:
 - Stress level: ${record.stressLevel ?? 'unknown'}
 `;
 
-    const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                generationConfig: {
-                    temperature: 0.4,
-                    maxOutputTokens: 1000,
-                },
-            }),
-        }
-    );
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+            "HTTP-Referer": SITE_URL, // Optional
+            "X-Title": SITE_NAME,     // Optional
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "model": "google/gemini-2.0-flash-001", // Or "google/gemini-flash-1.5"
+            "messages": [
+                { "role": "user", "content": prompt }
+            ],
+            "temperature": 0.4,
+            "max_tokens": 1000
+        })
+    });
 
     const json = await res.json();
-    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    
+    // OpenRouter uses the OpenAI format: choices[0].message.content
+    const text = json?.choices?.[0]?.message?.content ?? '';
 
     return text
-    .replace(/\*\*(.*?)\*\*/g, '$1')     // **bold**
-    .replace(/\*(.*?)\*/g, '$1')          // *italic*
-    .replace(/`(.*?)`/g, '$1')            // inline code
-    .replace(/^#+\s*/gm, '')              // headers
-    .split(/\n+|\d+\.\s+/)                // bullets OR numbered lists
-    .map(s => s.replace(/^[-•]\s*/, '').trim())
-    .filter(s => s.length > 10);
-
+        .replace(/\*\*(.*?)\*\*/g, '$1')     // remove bold
+        .replace(/\*(.*?)\*/g, '$1')       // remove italic
+        .replace(/`(.*?)`/g, '$1')         // remove code
+        .replace(/^#+\s*/gm, '')           // remove headers
+        .split(/\n+|\d+\.\s+/)             // split by newlines or numbered lists
+        .map((s: string) => s.replace(/^[-•]\s*/, '').trim())
+        .filter((s: string) => s.length > 10);
 }
 
 export default function Suggestions() {
@@ -90,59 +97,63 @@ export default function Suggestions() {
     const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
     const [aiLoading, setAiLoading] = useState(false);
 
-    const processDisorder = (level: number) => {
+    const processDisorder = (level: number | null) => {
+        if (level == null) {
+            return "";
+        }
+
         if (level > 1.5) {
-            return "You may be at an increased risk of sleep apnea";
+            level -= 1.3;
+            const prob = Math.min(0.9, level / 0.5);
+            return `Your sleep patterns suggest an elevated likelihood of sleep apnea (approximately ${Math.round(prob * 100)}% confidence).`;
         }
 
         if (level > 0.5) {
-            return "You may be at an increased risk of insomnia";
+            level -= 0.3;
+            const prob = Math.min(0.9, level / 0.5);
+            return `Your sleep patterns are consistent with a potential risk of insomnia (approximately ${Math.round(prob * 100)}% confidence).`;
         }
 
-        return "Our proprietary models predict you are at perfect health";
+        const prob = Math.max(0, 1 - level / 0.5);
+        return `Your sleep patterns do not indicate a significant risk of sleep disorders (${Math.round(prob * 100)}% confidence).`;
     };
 
+
     useEffect(() => {
-        const fetchLatest = async () => {
-            setLoading(true);
-            setError(null);
+    const fetchLatest = async () => {
+        setLoading(true);
+        setError(null);
 
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                const authUid = session?.user?.id;
-                if (!authUid) throw new Error('Not authenticated');
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const authUid = session?.user?.id;
+            if (!authUid) throw new Error('Not authenticated');
 
-                const userUid = session?.user?.user_metadata?.uid || authUid;
+            const userUid = session?.user?.user_metadata?.uid || authUid;
 
-                const { data, error } = await supabase
-                    .from('insights')
-                    .select('*')
-                    .eq('uid', userUid)
-                    .order('created_at', { ascending: false })
-                    .limit(1);
+            const { data, error } = await supabase
+                .from('insights')
+                .select('*')
+                .eq('uid', userUid)
+                .order('created_at', { ascending: false })
+                .limit(1);
 
-                if (error) throw error;
+            if (error) throw error;
 
-                const latest = (data || [])[0] as SleepRecord | undefined;
-                setRecord(latest ?? null);
+            const latest = (data || [])[0] as SleepRecord | undefined;
+            setRecord(latest ?? null);
 
-                if (latest) {
-                    setAiLoading(true);
-                    const ai = await generateGeminiSuggestions(latest);
-                    setAiSuggestions(ai);
-                }
-            } catch (e: any) {
-                setError(e.message || 'Failed to load data');
-                setRecord(null);
-                setAiSuggestions([]);
-            } finally {
-                setLoading(false);
-                setAiLoading(false);
-            }
-        };
+        } catch (e: any) {
+            setError(e.message || 'Failed to load data');
+            setRecord(null);
+            setAiSuggestions([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchLatest();
-    }, []);
+    fetchLatest();
+}, []);
 
     const handleGenerateAI = async () => {
         if (!record) return;
@@ -167,12 +178,16 @@ export default function Suggestions() {
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={[styles.headerContainer, { marginTop: 50 }]}>
-                    <Text style={styles.title}>Latest Insight</Text>
+                    <Text style={styles.title}>Latest Insight by SomniQ</Text>
                     <Text style={styles.subtitle}>
                         Your most recent sleep entry and AI-powered suggestions.
                     </Text>
                 </View>
 
+                <BlurView intensity={Platform.OS === 'ios' ? 25 : 100} tint="dark" style={[styles.glassCard, { width: cardWidth }]}>
+                    <Text style={styles.sectionHeader}>Introducing SomniQ</Text>
+                    <Text style={styles.metricValue}>SomniQ leverages state-of-the-art neural intelligence trained on an Oxford-funded clinical research dataset to deliver next-generation sleep diagnostics. Through extensive fine-tuning and validation, the model learns deep patterns in sleep behavior that traditional approaches often miss, enabling scalable, high-confidence insights for both individuals and care providers.</Text>
+                </BlurView>
                 <BlurView intensity={Platform.OS === 'ios' ? 25 : 100} tint="dark" style={[styles.glassCard, { width: cardWidth }]}>
                     <Text style={styles.sectionHeader}>Most recent record</Text>
 
@@ -193,7 +208,7 @@ export default function Suggestions() {
                                 </View>
                                 <View style={styles.metric}>
                                     <Text style={styles.metricLabel}>Quality</Text>
-                                    <Text style={styles.metricValue}>{record.sleepQuality ?? '-'}</Text>
+                                    <Text style={styles.metricValue}>{Math.round(100 * record.sleepQuality)/100}</Text>
                                 </View>
                                 <View style={styles.metric}>
                                     <Text style={styles.metricLabel}>Sleep (h)</Text>
@@ -217,8 +232,8 @@ export default function Suggestions() {
                             </View>
                             <View style={styles.row}>
                                 <View style={styles.metric}>
-                                    <Text style={styles.metricLabel}>Sleep Disorder Diagnosis</Text>
-                                    <Text style={styles.metricValue}>{processDisorder(record.disorderLevel) ?? '-'}</Text>
+                                    <Text style={styles.metricLabel}>Sleep Disorder Diagnosis by SomniQ</Text>
+                                    <Text style={styles.metricValue}>{processDisorder(record?.disorderLevel) ?? '-'}</Text>
                                 </View>
                             </View>
                         </>

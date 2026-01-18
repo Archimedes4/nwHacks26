@@ -6,7 +6,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Colors, DEFAULT_FONT } from '../types';
-import { submitJsonData } from '../functions/database'; 
+import { submitJsonData } from '../functions/database';
+import {supabase} from "@/functions/supabase";
 
 export default function Home() {
   const { width, height } = useWindowDimensions();
@@ -72,43 +73,46 @@ const getError = (field: string, value: any) => {
   return null;
 };
 
-const handlePress = async () => {
-  let errorsFound = false;
-  Object.keys(form).forEach(key => { 
-    if (getError(key, (form as any)[key])) errorsFound = true; 
-  });
+    const handlePress = async () => {
+        setLoading(true);
+        try {
+            // 1. Get your session token (assuming you're using Supabase Auth)
+            // You'll need to import your supabase client here
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
 
-  if (errorsFound) {
-    setShowErrors(true);
-    Alert.alert("Invalid Input", "Some metrics are outside of normal ranges.");
-    return;
-  }
+            // 2. Prepare data exactly as healthDataSchema expects
+            const submissionData = {
+                gender: form.gender,
+                age: parseInt(form.age),
+                height: parseFloat(form.height),
+                weight: parseFloat(form.weight),
+                sleepDuration: parseFloat(form.sleepDuration),
+                physicalActivity: parseInt(form.physicalActivity),
+                restingHeartrate: form.restingHeartrate ? parseInt(form.restingHeartrate) : null,
+                dailySteps: form.dailySteps ? parseInt(form.dailySteps) : null,
+                stressLevel: form.stressLevel ? parseInt(form.stressLevel) : null,
+            };
 
-  setLoading(true);
-  try {
-    // Convert to correct numeric types for Supabase
-    const submissionData = {
-      ...form,
-      age: parseInt(form.age, 10),
-      height: parseInt(form.height, 10),
-      weight: parseInt(form.weight, 10),
-      sleepDuration: parseFloat(form.sleepDuration),
-      physicalActivity: parseInt(form.physicalActivity, 10),
-      restingHeartrate: form.restingHeartrate ? parseInt(form.restingHeartrate, 10) : null,
-      dailySteps: form.dailySteps ? parseInt(form.dailySteps, 10) : null,
-      stressLevel: form.stressLevel ? parseInt(form.stressLevel, 10) : null,
+            // 3. The HTTP Request
+            const response = await fetch('http://localhost:8082/insights', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // This is required by your authMiddleware!
+                },
+                body: JSON.stringify(submissionData),
+            });
+
+            if (!response.ok) throw new Error("Server rejected the data");
+
+            Alert.alert("Success", "Insights generated!");
+        } catch (err: any) {
+            Alert.alert("Error", err.message);
+        } finally {
+            setLoading(false);
+        }
     };
-
-    const result = await submitJsonData(submissionData);
-    if (result?.error) throw new Error(result.error.message);
-    
-    Alert.alert("Success", "Your profile has been analyzed!");
-  } catch (err: any) {
-    Alert.alert("Submission Error", err.message);
-  } finally {
-    setLoading(false);
-  }
-};
 
   return (
     <View style={{ flex: 1, backgroundColor: '#050816' }}>

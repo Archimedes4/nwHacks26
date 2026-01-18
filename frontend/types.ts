@@ -26,4 +26,4 @@ export type userType = {
   weight: number,
 }
 
-export const BACKEND_URL = "https://localhost:3000"
+export const BACKEND_URL = "https://localhost:8082"

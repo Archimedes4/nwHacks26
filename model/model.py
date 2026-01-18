@@ -238,3 +238,5 @@ r2 = r2_score(test_true, test_preds)
 # print(f"Test R^2:  {r2:.4f}")
 
 print(X_train.columns)
+
+print(test_preds)

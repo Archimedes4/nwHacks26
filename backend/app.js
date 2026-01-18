@@ -12,7 +12,9 @@ const crypto_1 = require("crypto");
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const port = 3000;
+const port = 8082;
+app.use((0, cors_1.default)());
+app.use(express_1.default.json());
 const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
 const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
 const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseAnonKey);
@@ -53,6 +55,7 @@ app.post('/users', authMiddleware, async (req, res) => {
         const { error } = await supabase
             .from("users")
             .insert({
+            id: (0, crypto_1.randomUUID)(),
             uid: req.user.id,
             name: result.data.name,
             gender: result.data.gender,
@@ -164,7 +167,6 @@ app.post("/insights", authMiddleware, async (req, res) => {
     if (!result.success) {
         return res.status(400).json({ error: result.error.issues });
     }
-    // Call model service
     // Get the user from the server
     let userInfo = null;
     if (result.data.gender === undefined || result.data.age === undefined || result.data.height === undefined || result.data.weight === undefined) {
@@ -187,6 +189,36 @@ app.post("/insights", authMiddleware, async (req, res) => {
             weight: result.data.weight,
         };
     }
+    // Call model service
+    console.log("Calling model");
+    const modelResult = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        body: JSON.stringify({
+            gender: userInfo.gender,
+            age: userInfo.age,
+            heightCm: userInfo.height,
+            weightKg: userInfo.weight,
+            restingHeartrate: result.data.restingHeartrate,
+            activityMinutes: result.data.physicalActivity,
+            dailySteps: result.data.dailySteps,
+            sleepDuration: result.data.sleepDuration,
+            stressLevel: result.data.stressLevel,
+        })
+    });
+    if (!modelResult.ok) {
+        console.error("MODEL ERROPR");
+        return res.status(500).send('Internal Server Error');
+    }
+    const modelData = await modelResult.json();
+    if (modelData.predictions.length < 1) {
+        console.error("MODEL ERROPR");
+        return res.status(500).send('Internal Server Error');
+    }
+    console.log(modelData.predictions[0]);
+    const float = parseFloat(modelData.predictions[0]);
+    if (Number.isNaN(float)) {
+        return res.status(500).send('Internal Server Error');
+    }
     const { error } = await supabase
         .from("insights")
         .insert({
@@ -202,7 +234,7 @@ app.post("/insights", authMiddleware, async (req, res) => {
         dailySteps: result.data.dailySteps,
         stressLevel: result.data.stressLevel,
         date: new Date().toISOString(),
-        sleepQuality: 0
+        sleepQuality: float
     });
     if (error) {
         console.error(error);

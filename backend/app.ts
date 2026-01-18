@@ -234,7 +234,8 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
   }
 
   // Call model service
-  const modelResult = await fetch("http://fulfilling-passion.railway.internal/predict", {
+  console.log("Calling model")
+  const modelResult = await fetch("http://127.0.0.1:8000/predict", {
     method: "POST",
     body: JSON.stringify({
       gender: userInfo.gender,
@@ -248,7 +249,23 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
       stressLevel: result.data.stressLevel,
     })
   })
+  if (!modelResult.ok) {
+    console.error("MODEL ERROPR")
+    return res.status(500).send('Internal Server Error');
+  }
+  const modelData = await modelResult.json()
 
+
+  if (modelData.predictions.length < 1 ) {
+    console.error("MODEL ERROPR")
+    return res.status(500).send('Internal Server Error');
+  }
+
+  console.log(modelData.predictions[0]);
+  const float = parseFloat(modelData.predictions[0]);
+  if (Number.isNaN(float)) {
+    return res.status(500).send('Internal Server Error');
+  }
 
   const { error } = await supabase
   .from("insights")
@@ -265,7 +282,7 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
     dailySteps: result.data.dailySteps,
     stressLevel: result.data.stressLevel,
     date: new Date().toISOString(),
-    sleepQuality: 0
+    sleepQuality: float
   })
 
   if (error) {

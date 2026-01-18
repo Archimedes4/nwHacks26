@@ -1,5 +1,3 @@
-// typescript
-// File: 'app/(auth)/account.tsx'
 import React, { useEffect, useState } from "react";
 import {
     View,
@@ -13,6 +11,7 @@ import {
     Pressable,
     ActivityIndicator,
     useWindowDimensions,
+    TouchableOpacity, // Added
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,7 +22,7 @@ import { getUserInfo, updateUserInfo } from "@/functions/user";
 import Onboarding from "@/components/Onboarding";
 import HeaderSpacer from "@/components/HeaderSpacer";
 import Header from "@/components/Header";
-import {LinearGradient} from "expo-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Account() {
     const { session } = useAuth();
@@ -105,7 +104,6 @@ export default function Account() {
                             <Text style={styles.pageSubtitle}>Manage your profile and settings.</Text>
                         </View>
 
-                        {/* Profile card */}
                         <BlurView intensity={Platform.OS === "ios" ? 25 : 100} tint="dark" style={[styles.glassCard, styles.cardShadow, { width: cardWidth }]}>
                             <View style={styles.cardHeaderRow}>
                                 <View style={{ flex: 1 }}>
@@ -155,12 +153,31 @@ export default function Account() {
                                 defaultValue={user?.name}
                                 onChangeText={(v: string) => setUser((u) => (u ? { ...u, name: v } : u))}
                             />
-                            <InputField
-                                label="Gender"
-                                placeholder="Male/Female"
-                                defaultValue={user?.gender}
-                                onChangeText={(v: string) => setUser((u) => (u ? { ...u, gender: v as any } : u))}
-                            />
+
+                            {/* Updated Gender Selection */}
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>Gender</Text>
+                                <View style={styles.row}>
+                                    {['Male', 'Female'].map((option) => (
+                                        <TouchableOpacity
+                                            key={option}
+                                            style={[
+                                                styles.selector, 
+                                                user?.gender === option && styles.selectedBox
+                                            ]}
+                                            onPress={() => setUser((u) => (u ? { ...u, gender: option as any } : u))}
+                                        >
+                                            <Text style={[
+                                                styles.selectorText, 
+                                                user?.gender === option && styles.selectedText
+                                            ]}>
+                                                {option}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+
                             <InputField
                                 label="Age"
                                 placeholder="Age"
@@ -168,20 +185,25 @@ export default function Account() {
                                 defaultValue={user?.age?.toString()}
                                 onChangeText={(v: string) => setUser((u) => (u ? { ...u, age: Number(v) || 0 } : u))}
                             />
-                            <InputField
-                                label="Height (cm)"
-                                placeholder="Height"
-                                keyboardType="number-pad"
-                                defaultValue={user?.height?.toString()}
-                                onChangeText={(v: string) => setUser((u) => (u ? { ...u, height: Number(v) || 0 } : u))}
-                            />
-                            <InputField
-                                label="Weight (kg)"
-                                placeholder="Weight"
-                                keyboardType="number-pad"
-                                defaultValue={user?.weight?.toString()}
-                                onChangeText={(v: string) => setUser((u) => (u ? { ...u, weight: Number(v) || 0 } : u))}
-                            />
+                            
+                            <View style={styles.row}>
+                                <InputField
+                                    label="Height (cm)"
+                                    placeholder="Height"
+                                    keyboardType="number-pad"
+                                    defaultValue={user?.height?.toString()}
+                                    containerStyle={{ flex: 1, marginRight: 12 }}
+                                    onChangeText={(v: string) => setUser((u) => (u ? { ...u, height: Number(v) || 0 } : u))}
+                                />
+                                <InputField
+                                    label="Weight (kg)"
+                                    placeholder="Weight"
+                                    keyboardType="number-pad"
+                                    defaultValue={user?.weight?.toString()}
+                                    containerStyle={{ flex: 1 }}
+                                    onChangeText={(v: string) => setUser((u) => (u ? { ...u, weight: Number(v) || 0 } : u))}
+                                />
+                            </View>
 
                             <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
                                 <Pressable style={[styles.modalBtn, styles.modalBtnCancel]} onPress={() => setEditOpen(false)} disabled={saving}>
@@ -214,12 +236,8 @@ function InputField({ label, showError, error, containerStyle, ...props }: any) 
 const styles = StyleSheet.create({
     scrollContent: { alignItems: "center", paddingBottom: 60, paddingTop: 40 },
     headerContainer: { marginBottom: 80, alignItems: "center" },
-
-    // Page header to match 'home'
     pageTitle: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 48, fontWeight: "900", letterSpacing: -2 },
     pageSubtitle: { color: "rgba(255, 255, 255, 0.4)", fontFamily: DEFAULT_FONT, fontSize: 20, marginTop: 10 },
-
-    // Glass card style to match 'home'
     glassCard: {
         padding: 40,
         borderRadius: 44,
@@ -234,10 +252,8 @@ const styles = StyleSheet.create({
             default: { elevation: 10 },
         }),
     },
-
     title: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 24, fontWeight: "900", letterSpacing: -0.8 },
     subtitle: { color: "rgba(255, 255, 255, 0.55)", fontFamily: DEFAULT_FONT, fontSize: 14, marginTop: 4, marginBottom: 14 },
-
     cardHeaderRow: { flexDirection: "row", alignItems: "center" },
     editBtn: {
         paddingHorizontal: 14,
@@ -248,13 +264,11 @@ const styles = StyleSheet.create({
         borderColor: "rgba(255,255,255,0.18)",
     },
     editBtnText: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 12, fontWeight: "800", letterSpacing: 0.3 },
-
     profileRow: { flexDirection: "row", alignItems: "center", marginTop: 8, marginBottom: 8 },
     avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: "rgba(255,255,255,0.12)" },
     avatarBorder: { borderWidth: 2, borderColor: "rgba(255,255,255,0.20)" },
     profileName: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 18, fontWeight: "800" },
     profileMeta: { color: "rgba(255,255,255,0.65)", fontFamily: DEFAULT_FONT, fontSize: 12, marginTop: 2 },
-
     statsRow: {
         flexDirection: "row",
         alignItems: "center",
@@ -270,28 +284,22 @@ const styles = StyleSheet.create({
     statDivider: { width: 1, height: "100%", backgroundColor: "rgba(255,255,255,0.12)", marginHorizontal: 8, borderRadius: 1 },
     statLabel: { color: "rgba(255,255,255,0.65)", fontFamily: DEFAULT_FONT, fontSize: 12 },
     statValue: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 16, fontWeight: "900", marginTop: 2 },
-
     labelRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-    label: { color: "rgba(255, 255, 255, 0.8)", fontFamily: DEFAULT_FONT, fontSize: 13, fontWeight: "700" },
+    label: { color: "rgba(255, 255, 255, 0.8)", fontFamily: DEFAULT_FONT, fontSize: 13, fontWeight: "700", marginBottom: 8 },
     inputGroup: { marginBottom: 18 },
     input: { backgroundColor: "rgba(255, 255, 255, 0.03)", borderRadius: 18, padding: 16, fontSize: 16, color: Colors.light, borderWidth: 1, borderColor: "rgba(255, 255, 255, 0.06)" },
     inputError: { borderColor: "#ff5252", backgroundColor: "rgba(255, 82, 82, 0.05)" },
     errorSmall: { color: "#ff5252", fontSize: 10, fontWeight: "900" },
-
-    button: { marginTop: 15, borderRadius: 22, overflow: "hidden" },
-    buttonInner: {
-        padding: 24,
-        alignItems: "center",
-        backgroundColor: "rgba(255,255,255,0.08)",
-        borderRadius: 22,
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.12)",
-    },
-    buttonText: { color: "#fff", fontFamily: DEFAULT_FONT, fontWeight: "900", fontSize: 20 },
+    
+    // Selector Styles from home.tsx
+    row: { flexDirection: 'row', marginBottom: 4 },
+    selector: { flex: 1, padding: 16, borderRadius: 18, marginHorizontal: 4, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', alignItems: 'center' },
+    selectedBox: { backgroundColor: Colors.light },
+    selectorText: { color: Colors.light, fontWeight: '700', fontFamily: DEFAULT_FONT },
+    selectedText: { color: '#050816' },
 
     loadingContainer: { flex: 1, backgroundColor: "#050816", justifyContent: "center", alignItems: "center" },
     loadingText: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 16 },
-
     modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.55)", justifyContent: "center", alignItems: "center", padding: 24 },
     modalCard: {
         width: "100%",

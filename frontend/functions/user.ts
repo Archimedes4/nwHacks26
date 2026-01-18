@@ -55,7 +55,7 @@ export async function createUser(
     }
 }
 
-type ProfileDefaults = { gender?: "Male" | "Female"; age?: number };
+type ProfileDefaults = { name?: string; gender?: "Male" | "Female"; age?: number; height?: number; weight?: number; };
 
 export async function getProfileDefaults(): Promise<ProfileDefaults> {
     const {
@@ -63,12 +63,12 @@ export async function getProfileDefaults(): Promise<ProfileDefaults> {
     } = await supabase.auth.getUser();
     if (!user) return {};
     const { data, error } = await supabase
-        .from("profiles")
-        .select("gender, age")
-        .eq("user_id", user.id)
+        .from("users")
+        .select("name, gender, age, height, weight")
+        .eq("uid", user.id)
         .single();
     if (error) return {};
-    return { gender: data?.gender ?? undefined, age: data?.age ?? undefined };
+    return data;
 }
 
 export async function upsertProfileDefaults(next: ProfileDefaults) {
@@ -77,15 +77,16 @@ export async function upsertProfileDefaults(next: ProfileDefaults) {
     } = await supabase.auth.getUser();
     if (!user) throw new Error("No user");
     const { error } = await supabase
-        .from("profiles")
+        .from("users")
         .upsert(
             {
-                user_id: user.id,
+                uid: user.id,
                 gender: next.gender ?? null,
                 age: next.age ?? null,
+                height: next.height,
+                weight: next.weight,
                 updated_at: new Date().toISOString(),
-            },
-            { onConflict: "user_id" }
+            }
         );
     if (error) throw error;
 }

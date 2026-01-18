@@ -211,8 +211,6 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
     return res.status(400).json({ error: result.error.issues });
   }
 
-  // Call model service
-
   // Get the user from the server
   let userInfo: { gender: "Male" | "Female"; age: number; height: number; weight: number; } | null = null;
   if (result.data.gender === undefined || result.data.age === undefined || result.data.height === undefined || result.data.weight === undefined) {
@@ -234,6 +232,23 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
       weight: result.data.weight,
     }
   }
+
+  // Call model service
+  const modelResult = await fetch("http://fulfilling-passion.railway.internal/predict", {
+    method: "POST",
+    body: JSON.stringify({
+      gender: userInfo.gender,
+      age: userInfo.age,
+      heightCm: userInfo.height,
+      weightKg: userInfo.weight,
+      restingHeartrate: result.data.restingHeartrate,
+      activityMinutes: result.data.physicalActivity,
+      dailySteps: result.data.dailySteps,
+      sleepDuration: result.data.sleepDuration,
+      stressLevel: result.data.stressLevel,
+    })
+  })
+
 
   const { error } = await supabase
   .from("insights")

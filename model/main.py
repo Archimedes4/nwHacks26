@@ -13,13 +13,28 @@ def health():
 @app.post("/predict")
 def predict():
     data = request.get_json(force=True)
-    # TODO: Transform data
-    x = data["x"]
 
-    X = np.array([x], dtype=float) if isinstance(x[0], (int, float)) else np.array(x, dtype=float)
+    gender = 0 if data["gender"] == "Male" else 1
+    age = data["age"]
+    sleepDur = data["sleepDuration"]
+    act = data["activityMinutes"]
+    bmi = data["weightKg"] / ((data["heightCm"] / 100) ** 2)
+    bmi_cat = 0
+    if (bmi >= 30): 
+        bmi_cat = 2
+    elif (bmi >= 25):
+        bmi_cat = 1
+    
+    restHR = data["restingHeartrate"] 
+    steps = data["dailySteps"]
+    stressLevel = data["stressLevel"] 
+    sys, dia = 110, 60
+
+    x = [gender, age, sleepDur, act, stressLevel, bmi_cat, restHR, steps, sys, dia]
+    X = np.array(x, dtype=float)
 
     if hasattr(model, "predict"):
-        preds = model.predict(X)
+        preds = model.predict(X.reshape(1, -1))
         return jsonify(predictions=np.asarray(preds).tolist())
 
 if __name__ == "__main__":

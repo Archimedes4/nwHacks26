@@ -225,6 +225,16 @@ test_df_features, _ = preprocess(test_df, is_train=False)
 
 # Align columns with training data
 test_encoded = test_df_features.reindex(columns=X_train.columns, fill_value=0)
-
+test_true = test_df_features.reindex(columns=labels, fill_value=0)
 # Predict
 test_preds = model.predict(test_encoded)
+
+mae = mean_absolute_error(test_true, test_preds)
+rmse = np.sqrt(mean_squared_error(test_true, test_preds))
+r2 = r2_score(test_true, test_preds)
+
+# print(f"Test MAE:  {mae:.4f}")
+# print(f"Test RMSE: {rmse:.4f}")
+# print(f"Test R^2:  {r2:.4f}")
+
+print(X_train.columns)

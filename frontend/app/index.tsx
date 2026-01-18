@@ -23,9 +23,10 @@ export default function Index() {
                 source={require('../assets/images/Background-1.png')}
                 contentFit="cover"
                 transition={1000}
-                style={{ width, height }}
+                style={{ position: 'absolute', top: 0, left: 0, width, height }}
             />
-            <View style={{ width, height, position: 'absolute', paddingHorizontal: 20, paddingTop: 100 + insets.top }}>
+            <View style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', width, height }}></View>
+            <View style={{ width, height, position: 'absolute', paddingHorizontal: 100, paddingTop: 100 + insets.top }}>
                 <Text style={styles.title}>Your recent advice</Text>
                 <Text style={styles.subtitle}>Quick navigation</Text>
 

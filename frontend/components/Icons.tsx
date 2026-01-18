@@ -1,6 +1,6 @@
 import React from "react"
 import { ViewStyle } from "react-native";
-import {Path, Svg} from "react-native-svg"
+import {Circle, Line, Path, Polyline, Svg} from "react-native-svg"
 
 type IconInput = {
   width: number;
@@ -56,6 +56,20 @@ export function GoogleIcon({width, height, style, color}:IconInput) {
       <Path d="M16.2863 29.9998C20.1434 29.9998 23.3814 28.7553 25.7466 26.6086L21.2386 23.1863C20.0323 24.0108 18.4132 24.5863 16.2863 24.5863C12.5086 24.5863 9.30225 22.1441 8.15929 18.7686L7.99176 18.7825L3.58208 22.127L3.52441 22.2841C5.87359 26.8574 10.699 29.9998 16.2863 29.9998Z" fill="#34A853" />
       <Path d="M8.15964 18.769C7.85806 17.8979 7.68352 16.9645 7.68352 16.0001C7.68352 15.0356 7.85806 14.1023 8.14377 13.2312L8.13578 13.0456L3.67083 9.64746L3.52475 9.71556C2.55654 11.6134 2.00098 13.7445 2.00098 16.0001C2.00098 18.2556 2.55654 20.3867 3.52475 22.2845L8.15964 18.769Z" fill="#FBBC05" />
       <Path d="M16.2864 7.4133C18.9689 7.4133 20.7784 8.54885 21.8102 9.4978L25.8419 5.64C23.3658 3.38445 20.1435 2 16.2864 2C10.699 2 5.8736 5.1422 3.52441 9.71549L8.14345 13.2311C9.30229 9.85555 12.5086 7.4133 16.2864 7.4133Z" fill="#EB4335" />
+    </Svg>
+  )
+}
+
+export function IncognitoIcon({width, height, style, color}:IconInput) {
+  return (
+    <Svg viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" fill="#000000" width={width} height={height} style={style}>
+        <Polyline  points="0.5 11.04 12 11.04 23.5 11.04"  fill="none" stroke="#020202" strokeMiterlimit={10} strokeWidth={1.92}/>
+        <Path d="M19.67,11H4.33L5,4.68A2.54,2.54,0,0,1,7.57,2.42h0a2.47,2.47,0,0,1,1.13.27h0a7.43,7.43,0,0,0,6.6,0h0a2.47,2.47,0,0,1,1.13-.27h0A2.54,2.54,0,0,1,19,4.68Z"  fill="none" stroke="#020202" strokeMiterlimit={10} strokeWidth={1.92}/>
+        <Circle  cx="6.73" cy="18.23" r="3.35" fill="none" stroke="#020202" strokeMiterlimit={10} strokeWidth={1.92}/>
+        <Circle  cx="17.27" cy="18.23" r="3.35"  fill="none" stroke="#020202" strokeMiterlimit={10} strokeWidth={1.92}/>
+        <Path  d="M10.08,18.71a1.92,1.92,0,1,1,3.84,0"  fill="none" stroke="#020202" strokeMiterlimit={10} strokeWidth={1.92}/>
+        <Line x1="1.46" y1="15.83" x2="4.33" y2="15.83"  fill="none" stroke="#020202" strokeMiterlimit={10} strokeWidth={1.92}/>
+        <Line  x1="19.67" y1="15.83" x2="22.54" y2="15.83" fill="none" stroke="#020202" strokeMiterlimit={10} strokeWidth={1.92} />
     </Svg>
   )
 }

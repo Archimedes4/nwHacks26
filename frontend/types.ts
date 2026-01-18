@@ -4,7 +4,8 @@ export enum Colors {
   tertiary = "#CE6A85",
   dark = "#3f3f37",
   light = "#efebce",
-  red = "#F54927"
+  red = "#F54927",
+  blue = "#273CF5"
 }
 
 export enum loadingStateEnum {

@@ -1,13 +1,21 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, useWindowDimensions } from 'react-native'
 import React from 'react'
 import {Link} from "expo-router"
 import {Colors, DEFAULT_FONT} from "@/types"
+import { LinearGradient } from 'expo-linear-gradient'
 
 export default function Header() {
+      const { width, height } = useWindowDimensions();
+
   return (
-    <>
-      <Text style={{fontFamily: "Pacifico", color: Colors.light, fontSize: 45, marginTop: 10, marginHorizontal: 'auto'}}>Somnia</Text>
-      <View style={{flexDirection: 'row', position: 'absolute', top: 20, right: 0}}>
+    <View style={{backgroundColor: 'transparent', position: 'fixed', zIndex: 100, width: '100%', top: 0, paddingHorizontal: '10%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+        <LinearGradient
+                // Background Linear Gradient
+            colors={[Colors.primary, Colors.secondary, 'transparent']}
+            style={{position: 'absolute', height: 100, width: '100%', opacity: 0.8}}
+        />
+      <Text style={{fontFamily: "Pacifico", color: Colors.light, fontSize: 45, marginTop: 10}}><Link href={"/"}>Somnia</Link></Text>
+      <View style={{flexDirection: 'row', position: 'relative', marginLeft: 'auto'}}>
         <Link href={"./login"} asChild>
           <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Login</Text>
         </Link>
@@ -17,6 +25,6 @@ export default function Header() {
           </Pressable>
         </Link>
       </View>
-    </>
+    </View>
   )
 }

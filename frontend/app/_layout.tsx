@@ -1,9 +1,12 @@
-import { useEffect } from 'react';
+import { createContext, useEffect } from 'react';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import 'react-native-reanimated';
+import Header from '../components/Header';
+import { View } from 'react-native'
 import '../app.css';
+import { Colors, DEFAULT_FONT } from '../types';
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -22,7 +25,12 @@ export default function RootLayout() {
     return null;
   }
 
+  const TextStyleContext = createContext({fontFamily: DEFAULT_FONT});
+
   return (
-    <Slot />
+    <TextStyleContext.Provider value={{fontFamily: DEFAULT_FONT}}>
+        <Header />
+        <Slot />
+    </TextStyleContext.Provider>
   );
 }

@@ -99,9 +99,13 @@ function PasswordLogin({setState}:{setState: (e: loadingStateEnum) => void;}) {
             <TextInput
                 value={password}
                 onChangeText={setPassword}
-                style={{fontFamily: DEFAULT_FONT, backgroundColor: Colors.tertiary, borderRadius: 15, padding: 15, paddingTop: 15, color: Colors.light, marginBottom: 10, outline: "none"}}
+                style={{ fontFamily: DEFAULT_FONT, backgroundColor: Colors.tertiary, borderRadius: 15, padding: 15, paddingTop: 15, color: Colors.light, marginBottom: 10, outline: "none" }}
                 placeholder='Password'
                 placeholderTextColor={Colors.light}
+                secureTextEntry={true}
+                autoCorrect={false}
+                autoCapitalize='none'
+                textContentType='password'
             />
             {errors.includes("password") &&
                 <Text style={{fontFamily: DEFAULT_FONT, color: Colors.red, marginBottom: 10}}>Please enter a password that is atleast 5 characters long!</Text>

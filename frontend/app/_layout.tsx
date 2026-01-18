@@ -1,8 +1,8 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { router, Slot } from 'expo-router';
+import { router, Slot, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { View } from 'react-native'; // Added View for layout stability
+import { useWindowDimensions, View } from 'react-native'; // Added View for layout stability
 import 'react-native-reanimated';
 import Header from '../components/Header';
 import '../app.css';
@@ -19,7 +19,9 @@ export const TextStyleContext = createContext({ fontFamily: DEFAULT_FONT });
 
 export default function RootLayout() {
   const [activeTab, setActiveTab] = useState(0);
+  const pathname = usePathname();
   const {session, loading} = useAuth();
+  const {width} = useWindowDimensions();
   const [fontsLoaded, fontError] = useFonts({
     'Pacifico': require('../assets/fonts/Pacifico/Pacifico-Regular.ttf'),
     'Playpen': require("../assets/fonts/Playpen_Sans/PlaypenSans-VariableFont_wght.ttf"),
@@ -27,17 +29,17 @@ export default function RootLayout() {
     'FacultyGlyphic': require('../assets/fonts/Faculty_Glyphic/FacultyGlyphic-Regular.ttf')
   });
 
-  useEffect(() => {
-    if (activeTab === 0) {
+  function call() {
+    if (activeTab === 0 && pathname !== "/") {
       router.push("/")
-    } else if (activeTab === 1) {
+    } else if (activeTab === 1 && pathname !== "/record") {
       router.push("/record")
-    } else if (activeTab === 2) {
+    } else if (activeTab === 2 && pathname !== "suggestions") {
       router.push("/suggestions")
-    } else if (activeTab === 3) {
+    } else if (activeTab === 3 && pathname !== "/account") {
       router.push("/account")
     }
-  }, [activeTab])
+  }
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -59,7 +61,7 @@ export default function RootLayout() {
         <View style={{ flex: 1, backgroundColor: Colors.primary }}>
           <Header />
           <Slot />
-          {session && !loading &&
+          {session && !loading && (width < 700) &&
             <LiquidGlassTabBar
               tabs={[
               {
@@ -83,7 +85,7 @@ export default function RootLayout() {
                 icon: <PersonIcon width={25} height={25} color={Colors.light}/>,
               },
             ]}
-            activeIndex={activeTab} onChange={setActiveTab} />
+            activeIndex={activeTab} onChange={(e) => {setActiveTab(e); call()}} />
           }
         </View>
       </TextStyleContext.Provider>

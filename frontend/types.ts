@@ -26,4 +26,4 @@ export type userType = {
   weight: number,
 }
 
-export const BACKEND_URL = "https://nwhacks26-production.up.railway.app/"
+export const BACKEND_URL = "https://nwhacks26-production.up.railway.app"

@@ -3,9 +3,10 @@ import React from 'react'
 import {Link} from "expo-router"
 import {Colors, DEFAULT_FONT} from "@/types"
 import { LinearGradient } from 'expo-linear-gradient'
+import useAuth from '@/hooks/useAuth'
 
 export default function Header() {
-      const { width, height } = useWindowDimensions();
+  const {session, loading} = useAuth();
 
   return (
     <View style={{backgroundColor: 'transparent', position: 'fixed', zIndex: 100, width: '100%', top: 0, paddingHorizontal: '10%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
@@ -15,16 +16,19 @@ export default function Header() {
             style={{position: 'absolute', height: 100, width: '100%', opacity: 0.8}}
         />
       <Text style={{fontFamily: "Pacifico", color: Colors.light, fontSize: 45, marginTop: 10}}><Link href={"/"}>Somnia</Link></Text>
-      <View style={{flexDirection: 'row', position: 'relative', marginLeft: 'auto'}}>
-        <Link href={"./login"} asChild>
-          <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Login</Text>
-        </Link>
-        <Link href={"./signup"} asChild>
-          <Pressable style={{paddingHorizontal: 15, backgroundColor: Colors.secondary, height: 60, borderRadius: 30, marginVertical: 'auto', marginHorizontal: 15}}>
-            <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Sign Up</Text>
-          </Pressable>
-        </Link>
-      </View>
+      {session === null ?
+        <View style={{flexDirection: 'row', position: 'relative', marginLeft: 'auto'}}>
+          <Link href={"./login"} asChild>
+            <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Login</Text>
+          </Link>
+          <Link href={"./signup"} asChild>
+            <Pressable style={{paddingHorizontal: 15, backgroundColor: Colors.secondary, height: 60, borderRadius: 30, marginVertical: 'auto', marginHorizontal: 15}}>
+              <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Sign Up</Text>
+            </Pressable>
+          </Link>
+        </View>:
+        <View style={{marginLeft: 'auto'}}/>
+      }
     </View>
   )
 }

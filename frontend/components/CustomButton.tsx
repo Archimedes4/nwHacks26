@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native'
+import { Text, Pressable, ViewStyle } from 'react-native'
 import React from 'react'
 import {Colors, DEFAULT_FONT} from "@/types"
 

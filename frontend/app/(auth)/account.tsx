@@ -33,10 +33,6 @@ export default function Account() {
         />
         <View id="dim" style={{position: 'absolute', backgroundColor: "rgba(0,0,0,0.2)", width, height: height * 0.4}} />
       </View>
-      
-      <View style={{width, height, position: 'absolute'}}>
-        <Text style={{fontFamily: "Pacifico", color: Colors.light, fontSize: 45, marginTop: 10, marginHorizontal: 'auto'}}>Somnia</Text>
-      </View>
       <View style={{width, height, position: 'absolute', top: height * 0.125, left: 30}}>
         <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 45, marginTop: 10}}>{getGreeting(new Date())} Andrew</Text>
       </View>

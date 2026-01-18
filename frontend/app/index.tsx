@@ -4,7 +4,7 @@ import { Colors, DEFAULT_FONT } from '../types';
 import { Link } from 'expo-router';
 import { Image } from 'expo-image';
 import LandingPage from '@/components/LandingPage';
-import { HomeIcon, PersonIcon, SleepIcon } from '@/components/Icons';
+import { HomeIcon, PersonIcon, SleepIcon, BulbIcon } from '@/components/Icons';
 import useAuth from '@/hooks/useAuth';
 
 export default function Index() {
@@ -33,6 +33,13 @@ export default function Index() {
                         <Pressable style={styles.card}>
                             <HomeIcon width={28} height={28} color={Colors.light} />
                             <Text style={styles.cardText}>Home</Text>
+                        </Pressable>
+                    </Link>
+
+                    <Link href="/suggestions" asChild>
+                        <Pressable style={styles.card}>
+                            <BulbIcon width={28} height={28} color={Colors.light} />
+                            <Text style={styles.cardText}>Suggestions</Text>
                         </Pressable>
                     </Link>
 

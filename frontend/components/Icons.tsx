@@ -9,6 +9,37 @@ type IconInput = {
   color?: string
 }
 
+type IconProps = { width?: number; height?: number; color?: string };
+
+export function BulbIcon({ width = 28, height = 28, color = '#ffffff' }: IconProps) {
+    return (
+        <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+            {/* Bulb glass */}
+            <Circle cx="12" cy="8" r="5.25" stroke={color} strokeWidth={2} />
+
+            {/* Neck + base */}
+            <Path
+                d="M9 13.25c0 1.8-2 2.4-2 4.25h10c0-1.85-2-2.45-2-4.25"
+                stroke={color}
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <Line x1="9" y1="17.5" x2="15" y2="17.5" stroke={color} strokeWidth={2} strokeLinecap="round" />
+            <Line x1="10" y1="19.5" x2="14" y2="19.5" stroke={color} strokeWidth={2} strokeLinecap="round" />
+            <Line x1="11" y1="21" x2="13" y2="21" stroke={color} strokeWidth={2} strokeLinecap="round" />
+
+            {/* Rays */}
+            <Line x1="12" y1="1.6" x2="12" y2="3.2" stroke={color} strokeWidth={2} strokeLinecap="round" />
+            <Line x1="8.6" y1="3.6" x2="7.3" y2="2.3" stroke={color} strokeWidth={2} strokeLinecap="round" />
+            <Line x1="15.4" y1="3.6" x2="16.7" y2="2.3" stroke={color} strokeWidth={2} strokeLinecap="round" />
+            <Line x1="3.5" y1="8" x2="5.2" y2="8" stroke={color} strokeWidth={2} strokeLinecap="round" />
+            <Line x1="18.8" y1="8" x2="20.5" y2="8" stroke={color} strokeWidth={2} strokeLinecap="round" />
+        </Svg>
+    );
+}
+
+
 export function SleepIcon({width, height, style, color}:IconInput) {
   return (
     <Svg viewBox="0 0 24 24" fill="none" width={width} height={height} style={style}>

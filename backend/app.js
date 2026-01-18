@@ -16,7 +16,8 @@ const port = 8082;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
-const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
+const supabaseAnonKey = process.env.SUPA_SECRET_KEY ?? "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
+console.log(process.env.SUPA_SECRET_KEY);
 const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseAnonKey);
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
@@ -158,7 +159,7 @@ exports.healthDataSchema = zod_1.z.object({
     weight: zod_1.z.number().positive().optional(), // kg
     sleepDuration: zod_1.z.number().positive(), // hours
     physicalActivity: zod_1.z.number().int().min(0), // minutes
-    restingHeartrate: zod_1.z.number().int().min(50).max(200).nullable().optional(),
+    restingHeartrate: zod_1.z.number().int().min(30).max(200).nullable().optional(),
     dailySteps: zod_1.z.number().int().min(0).nullable().optional(),
     stressLevel: zod_1.z.number().int().min(1).max(10).nullable().optional(),
 });
@@ -191,7 +192,7 @@ app.post("/insights", authMiddleware, async (req, res) => {
     }
     // Call model service
     console.log("Calling model");
-    const modelResult = await fetch("http://127.0.0.1:8000/predict", {
+    const modelResult = await fetch("http://fulfilling-passion.railway.internal:8000/predict", {
         method: "POST",
         body: JSON.stringify({
             gender: userInfo.gender,
@@ -210,12 +211,13 @@ app.post("/insights", authMiddleware, async (req, res) => {
         return res.status(500).send('Internal Server Error');
     }
     const modelData = await modelResult.json();
-    if (modelData.predictions.length < 1) {
+    if (modelData.predictions.length < 2) {
         console.error("MODEL ERROPR");
         return res.status(500).send('Internal Server Error');
     }
-    console.log(modelData.predictions[0]);
+    console.log(modelData.predictions);
     const float = parseFloat(modelData.predictions[0]);
+    const float2 = parseFloat(modelData.predictions[1]);
     if (Number.isNaN(float)) {
         return res.status(500).send('Internal Server Error');
     }
@@ -234,7 +236,8 @@ app.post("/insights", authMiddleware, async (req, res) => {
         dailySteps: result.data.dailySteps,
         stressLevel: result.data.stressLevel,
         date: new Date().toISOString(),
-        sleepQuality: float
+        sleepQuality: float,
+        disorderLevel: float2
     });
     if (error) {
         console.error(error);

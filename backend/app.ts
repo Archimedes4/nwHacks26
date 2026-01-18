@@ -12,7 +12,10 @@ const port = 8082
 app.use(cors());
 app.use(express.json());
 const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
-const supabaseAnonKey = process.env.SUPA_SECRET_KEY ?? "";
+const supabaseAnonKey = process.env.SUPA_SECRET_KEY ?? "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
+
+console.log(process.env.SUPA_SECRET_KEY)
+
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

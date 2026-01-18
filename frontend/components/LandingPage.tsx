@@ -6,8 +6,6 @@ import { AdviceIcon, SleepIcon, TVIcon } from './Icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import TestimonialCard from './TestimonialCard';
-import { BlurView } from 'expo-blur';
-import CustomButton from './CustomButton';
 import { Link, Redirect } from 'expo-router';
 
 const TESTIMONIALS = [
@@ -74,7 +72,7 @@ const styles = StyleSheet.create({
     }
 });
 
-export default function index() {
+export default function LandingPage() {
     const { width, height } = useWindowDimensions();
     const cardW = Math.min(320, Math.round(width * 0.78));
     const cardH = Math.max(260, Math.round(height * 0.35));

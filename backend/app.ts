@@ -235,7 +235,7 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
 
   // Call model service
   console.log("Calling model")
-  const modelResult = await fetch("http://fulfilling-passion.railway.internal/predict", {
+  const modelResult = await fetch("http://fulfilling-passion.railway.internal:8000/predict", {
     method: "POST",
     body: JSON.stringify({
       gender: userInfo.gender,

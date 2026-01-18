@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
-import { Colors, DEFAULT_FONT } from "../types";
+import { BACKEND_URL, Colors, DEFAULT_FONT } from "../types";
 import { supabase } from "@/functions/supabase";
 import { getProfileDefaults } from "@/functions/user";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -82,6 +82,7 @@ export default function Home() {
     };
 
     const handlePress = async () => {
+        console.log("PRESS")
         // Prevent submission if profile data is missing
         if (form.age === "—" || form.height === "—" || form.weight === "—") {
             Alert.alert("Missing Profile Info", "We need your age, height, and weight to generate insights. Please update your profile settings.");
@@ -105,7 +106,8 @@ export default function Home() {
                 stressLevel: form.stressLevel ? parseInt(form.stressLevel) : null,
             };
 
-            const response = await fetch("http://localhost:8082/insights", {
+            console.log("HERE")
+            const response = await fetch(BACKEND_URL + "/insights", {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json", 

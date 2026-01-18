@@ -5,6 +5,7 @@ import { BlurView } from 'expo-blur';
 import { supabase } from '@/functions/supabase';
 import { Colors, DEFAULT_FONT } from '../types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+//import { GoogleGenAI } from "@google/genai";
 
 type SleepRecord = {
     id: string;
@@ -66,7 +67,15 @@ export default function Suggestions() {
 
         fetchLatest();
     }, []);
+    //const ai = new GoogleGenAI({});
 
+    async function runGeminiAI() {
+    const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: "Explain how AI works in a few words",
+    });
+    console.log(response.text);
+    }
     const suggestions = useMemo(() => {
         if (!record) return [];
 

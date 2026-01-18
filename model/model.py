@@ -46,8 +46,8 @@ bmi_dict = {
 
 disorder_dict = {
     "None": 0,
-    "Insomnia": 1,
-    "Sleep Apnea": 2,
+    "Insomnia": 1000,
+    "Sleep Apnea": 2000,
 }
 
 def preprocess(df, is_train=True):
@@ -69,8 +69,8 @@ def preprocess(df, is_train=True):
     # df[numeric_cols] = df[numeric_cols].fillna(0)
     # df[non_numeric_cols] = df[non_numeric_cols].fillna("Unknown")
 
-    labels = ["Quality of Sleep"] # "Sleep Disorder"
-    df = df.drop(["Sleep Disorder"], axis=1)
+    labels = ["Quality of Sleep", "Sleep Disorder"] # "Sleep Disorder"
+    # df = df.drop(["Sleep Disorder"], axis=1)
     
     if not is_train:
         return df, None
@@ -112,8 +112,8 @@ print("Encoded train shape:", X_train.shape)
 print("Encoded valid shape:", X_valid.shape)
 
 # model versions
-VERSION = "rf_1"
-LOAD_FROM_DISK = True # if set to true, will load pretrained model so you don't have to retrain
+VERSION = "rf_2"
+LOAD_FROM_DISK = False # if set to true, will load pretrained model so you don't have to retrain
 MODEL_PATH = f"model/{VERSION}.pkl" # otherwise will train a model and save (and overwrite) to path
 
 if LOAD_FROM_DISK and os.path.exists(MODEL_PATH):
@@ -233,10 +233,16 @@ mae = mean_absolute_error(test_true, test_preds)
 rmse = np.sqrt(mean_squared_error(test_true, test_preds))
 r2 = r2_score(test_true, test_preds)
 
-# print(f"Test MAE:  {mae:.4f}")
-# print(f"Test RMSE: {rmse:.4f}")
-# print(f"Test R^2:  {r2:.4f}")
+print(f"Test MAE:  {mae:.4f}")
+print(f"Test RMSE: {rmse:.4f}")
+print(f"Test R^2:  {r2:.4f}")
 
-print(X_train.columns)
+# print(type(test_true))
 
-print(test_preds)
+for idx, row in test_preds.iterrows():
+    # if (row["Sleep Disorder"] != )
+    print(idx, row["Quality of Sleep"], row["Sleep Disorder"])
+
+# for i in range(1, len(test_true)):
+#     if (test_true[i][1] != round(test_preds[i][1] / 1000)):
+#         print(test_true[1], test_preds[1])

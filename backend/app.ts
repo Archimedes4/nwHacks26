@@ -200,7 +200,7 @@ export const healthDataSchema = z.object({
   sleepDuration: z.number().positive(),      // hours
   physicalActivity: z.number().int().min(0), // minutes
 
-  restingHeartrate: z.number().int().min(50).max(200).nullable().optional(),
+  restingHeartrate: z.number().int().min(30).max(200).nullable().optional(),
   dailySteps: z.number().int().min(0).nullable().optional(),
   stressLevel: z.number().int().min(1).max(10).nullable().optional(),
 });

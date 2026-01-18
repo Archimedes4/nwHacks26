@@ -9,12 +9,16 @@ const supabase_js_1 = require("@supabase/supabase-js");
 const zod_1 = require("zod");
 const dotenv_1 = __importDefault(require("dotenv"));
 const crypto_1 = require("crypto");
+const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = 3000;
 const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
 const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
 const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseAnonKey);
+app.use((0, cors_1.default)({
+    origin: "http://localhost:8081", // your frontend domain
+}));
 async function authMiddleware(req, res, next) {
     const auth = req.headers.authorization;
     if (!auth || !auth.startsWith("Bearer ")) {

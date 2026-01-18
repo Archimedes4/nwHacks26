@@ -3,6 +3,7 @@ import {createClient} from '@supabase/supabase-js'
 import {z} from "zod";
 import dotenv from 'dotenv';
 import { randomUUID } from "crypto";
+import cors from "cors";
 dotenv.config()
 
 const app = express()
@@ -12,6 +13,12 @@ const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
 const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+app.use(
+  cors({
+    origin: "http://localhost:8081", // your frontend domain
+  })
+);
 
 type userType = {
   uid: string;

@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAuth from "@/hooks/useAuth";
 import getGreeting from "@/functions/getGreeting";
 import SignOutButton from "@/components/SignOutButton";
-import { Colors, DEFAULT_FONT } from "@/types";
+import { Colors, DEFAULT_FONT, loadingStateEnum, userType } from "@/types";
+import { getUserInfo } from "@/functions/user";
 
 // TODO: implement this in your auth layer (see section 2 below)
 // import { updateAccountCredentials } from "@/functions/auth";
@@ -32,58 +33,27 @@ export default function Account() {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const heroH = Math.round(height * 0.27);
-  const cardWidth = Math.min(width * 0.95, 850);
 
-  const [loading, setLoading] = useState(false);
-  const [showErrors, setShowErrors] = useState(false);
-  const [form, setForm] = useState<FormState>({ username: "", password: "" });
 
-  const updateField = (field: keyof FormState, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const [state, setState] = useState(loadingStateEnum.loading);
+  const [user, setUser] = useState<userType | undefined>()
 
-  // Require at least ONE field to be filled (username or password)
-  const getError = (field: keyof FormState, value: string) => {
-    const bothEmpty = form.username.trim() === "" && form.password.trim() === "";
-    if (bothEmpty) {
-      if (field === "username" || field === "password") return "Fill at least one";
+  async function loadUser() {
+    setState(loadingStateEnum.loading)
+    const result = await getUserInfo()
+    if (result.result === loadingStateEnum.success) {
+      setUser(result.data)
     }
-    if (field === "password" && value && value.length > 0 && value.length < 6) {
-      return "Too short";
-    }
-    return null;
-  };
+    setState(result.result);
+  }
 
-  const handleUpdate = async () => {
-    const username = form.username.trim();
-    const password = form.password;
+  useEffect(() => {
+    loadUser();
+  }, [])
 
-    const usernameErr = getError("username", username);
-    const passwordErr = getError("password", password);
-    if (usernameErr || passwordErr) {
-      setShowErrors(true);
-      Alert.alert("Missing Info", "Enter a username and/or a new password.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Replace this with your real update call
-      // await updateAccountCredentials({ username: username || undefined, password: password || undefined });
-
-      // TEMP placeholder so UI works:
-      await new Promise((r) => setTimeout(r, 600));
-
-      Alert.alert("Success", "Your account has been updated.");
-      setForm((p) => ({ ...p, password: "" })); // clear password
-      setShowErrors(false);
-    } catch (err: any) {
-      Alert.alert("Error", err?.message ?? "Update failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (state === loadingStateEnum.loading) {
+    return <Text>Loading...</Text>
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#050816" }}>
@@ -96,7 +66,7 @@ export default function Account() {
       />
 
       {/* Hero image background */}
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: heroH }}>
+      <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: height * 0.3}}>
         <Image
           source={require("../../assets/images/Background-1.png")}
           contentFit="cover"
@@ -123,66 +93,8 @@ export default function Account() {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: heroH * 0.55, paddingBottom: 64 }}
         >
-          {/* Greeting (sits on the hero area) */}
-          <View style={{ paddingHorizontal: 24, marginBottom: 18 }}>
-            <Text style={styles.heroTitle}>{getGreeting(new Date())}</Text>
-            <Text style={styles.heroSubtitle}>{session?.user?.email ?? ""}</Text>
-          </View>
-
-          {/* Glass card form */}
-          <View style={{ alignItems: "center", marginTop: 50 }}>
-            <BlurView
-              intensity={Platform.OS === "ios" ? 25 : 100}
-              tint="dark"
-              style={[styles.glassCard, { width: cardWidth }]}
-            >
-              <View style={styles.headerContainer}>
-                <Text style={styles.title}>Account Settings</Text>
-                <Text style={styles.subtitle}>Update your username or password.</Text>
-              </View>
-
-              <InputField
-                label="Username"
-                value={form.username}
-                onChangeText={(v:string) => updateField("username", v)}
-                placeholder="New username"
-                autoCapitalize="none"
-                autoCorrect={false}
-                showError={showErrors}
-                error={getError("username", form.username.trim())}
-              />
-
-              <InputField
-                label="Password"
-                value={form.password}
-                onChangeText={(v:string) => updateField("password", v)}
-                placeholder="New password"
-                secureTextEntry
-                autoCapitalize="none"
-                showError={showErrors}
-                error={getError("password", form.password)}
-              />
-
-              <TouchableOpacity
-                style={[styles.button, loading && styles.disabled]}
-                onPress={handleUpdate}
-                disabled={loading}
-              >
-                <LinearGradient
-                  colors={["#3c3fff", "#1f2c7b"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.buttonGradient}
-                >
-                  <Text style={styles.buttonText}>
-                    {loading ? "Updating..." : "Save Changes"}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </BlurView>
-          </View>
+         
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

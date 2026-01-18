@@ -25,3 +25,5 @@ export type userType = {
   height: number,
   weight: number,
 }
+
+export const BACKEND_URL = "http://localhost:3000"

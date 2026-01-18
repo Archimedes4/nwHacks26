@@ -96,15 +96,19 @@ app.put('/users', authMiddleware, (req, res) => {
 })
 
 app.get('/users', authMiddleware, async (req, res) => {
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', req.user.uid)
-    .single()
+  const result = await getUser(req.user.aid);
+  if (!result.success) {
+    res.statusCode(400);
+    
+  }
 })
 
 
-app.get('/insights', authMiddleware, (req, res) => {
+app.get('/insights', authMiddleware, async (req, res) => {
+  const { data, error } = await supabase
+  .from("insights")
+  .select("*")
+  .eq("uid", req.user.aud);  // condition
   res.send("ok")
 })
 
@@ -118,9 +122,9 @@ export const healthDataSchema = z.object({
   sleepDuration: z.number().positive(),      // hours
   physicalActivity: z.number().int().min(0), // minutes
 
-  restingHeartrate: z.number().int().min(50).max(200).nullable(),
-  dailySteps: z.number().int().min(0).nullable(),
-  stressLevel: z.number().int().min(1).max(10).nullable(),
+  restingHeartrate: z.number().int().min(50).max(200).nullable().optional(),
+  dailySteps: z.number().int().min(0).nullable().optional(),
+  stressLevel: z.number().int().min(1).max(10).nullable().optional(),
 });
 app.post("/insights", authMiddleware, async (req, res) => {
   const result = healthDataSchema.safeParse(req.body);
@@ -129,16 +133,29 @@ app.post("/insights", authMiddleware, async (req, res) => {
     return res.status(400).json({ error: result.error.issues });
   }
 
-
-
   // Call model service
 
   // Get the user from the server
   let userInfo = null;
   if (result.data.gender === undefined || result.data.age === undefined || result.data.height === undefined || result.data.weight === undefined) {
-    const 
+    const userResult = await getUser(req.user.aid);
+    if (!result.success) {
+      res.send("User not found")
+      res.statusCode(404);
+      return;
+    }
     userInfo = {
-
+      gender: result.data.gender ? result.data.gender:userResult.data!.gender,
+      age: result.data.age ? result.data.age:userResult.data!.age,
+      height: result.data.height ? result.data.height:userResult.data!.height,
+      weight: result.data.weight ? result.data.weight:userResult.data!.weight,
+    }
+  } else {
+    userInfo = {
+      gender: result.data.gender,
+      age: result.data.age,
+      height: result.data.height,
+      weight: result.data.weight,
     }
   }
 
@@ -147,11 +164,17 @@ app.post("/insights", authMiddleware, async (req, res) => {
   .insert({
     id: randomUUID(),
     uid: req.user.aud,
-    name: result.data.name,
     gender: result.data.gender,
     age: result.data.age,
     height: result.data.height,
-    weight: result.data.weight
+    weight: result.data.weight,
+    sleepDuration: result.data.sleepDuration,
+    physicalActivity: result.data.physicalActivity,
+    restingHeartrate: result.data.restingHeartrate,
+    dailySteps: result.data.dailySteps,
+    stressLevel: result.data.stressLevel,
+    date: new Date().toISOString(),
+    sleepQuality: 0
   })
 
   if (error) {
@@ -169,19 +192,32 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-async function getUser(): Promise<{
-  success: true;
+async function getUser(uid: string): Promise<{
+  success: boolean;
   data: userType;
 } | {
-  success: false;
+  success: boolean;
+  data?: userType
 }> {
   try {
-  const { data, error } = await supabase
-    .from("your_table")
-    .select("*")
-    .eq("id", someId)
-    .single();
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("uid", uid)
+      .single();
+    if (error) {
+      console.error(error)
+      return {
+        success: false
+      }
+    }
+    return {
+      success: true,
+      data: data
+    }
   } catch {
-
+    return {
+      success: false
+    }
   }
 }

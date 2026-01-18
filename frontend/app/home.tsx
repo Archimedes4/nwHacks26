@@ -203,7 +203,7 @@ export default function Home() {
                             </View>
 
                             <View style={styles.column}>
-                                <Text style={styles.sectionHeader}>Activity \& Vitals</Text>
+                                <Text style={styles.sectionHeader}>Activity & Vitals</Text>
                                 <InputField label="Active Minutes" value={form.physicalActivity} onChangeText={(v: string) => updateField('physicalActivity', v)} placeholder="Daily total" showError={showErrors} error={getError('physicalActivity', form.physicalActivity)} />
                                 <View style={styles.row}>
                                     <InputField label="Resting HR" value={form.restingHeartrate} onChangeText={(v: string) => updateField('restingHeartrate', v)} placeholder="BPM" showError={showErrors} error={getError('restingHeartrate', form.restingHeartrate)} containerStyle={{flex: 1, marginRight: 12}} />

@@ -3,6 +3,7 @@ import {createClient} from '@supabase/supabase-js'
 import {z} from "zod";
 import dotenv from 'dotenv';
 import { randomUUID } from "crypto";
+import {userType} from "../frontend/types"
 dotenv.config()
 
 const app = express()
@@ -110,9 +111,7 @@ app.get('/insights', authMiddleware, (req, res) => {
 
 export const healthDataSchema = z.object({
   gender: z.enum(["Male", "Female"]).optional(),
-
   age: z.number().int().min(1).max(100).optional(),
-
   height: z.number().positive().optional(),  // cm
   weight: z.number().positive().optional(),  // kg
 
@@ -135,7 +134,13 @@ app.post("/insights", authMiddleware, async (req, res) => {
   // Call model service
 
   // Get the user from the server
-  if (result.data.gender === undefined || result.data.age === undefined || result.data.)
+  let userInfo = null;
+  if (result.data.gender === undefined || result.data.age === undefined || result.data.height === undefined || result.data.weight === undefined) {
+    const 
+    userInfo = {
+
+    }
+  }
 
   const { error } = await supabase
   .from("insights")
@@ -163,3 +168,20 @@ app.post("/insights", authMiddleware, async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+async function getUser(): Promise<{
+  success: true;
+  data: userType;
+} | {
+  success: false;
+}> {
+  try {
+  const { data, error } = await supabase
+    .from("your_table")
+    .select("*")
+    .eq("id", someId)
+    .single();
+  } catch {
+
+  }
+}

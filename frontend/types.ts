@@ -16,3 +16,12 @@ export enum loadingStateEnum {
 }
 
 export const DEFAULT_FONT = "FacultyGlyphic"
+
+export type userType = {
+  uid: string;
+  name: string,
+  gender: "Male" | "Female",
+  age: number,
+  height: number,
+  weight: number,
+}

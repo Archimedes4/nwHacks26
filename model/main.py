@@ -4,7 +4,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-model = joblib.load("model/rf_1.pkl")
+model = joblib.load("model/rf_2.pkl")
 
 @app.get("/health")
 def health():

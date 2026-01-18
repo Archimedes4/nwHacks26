@@ -35,6 +35,7 @@ def predict():
 
     if hasattr(model, "predict"):
         preds = model.predict(X.reshape(1, -1))[0]
+        preds[0] = round(preds[0], 1)
         return jsonify(predictions=np.asarray(preds).tolist())
 
 if __name__ == "__main__":

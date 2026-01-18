@@ -7,6 +7,7 @@ import {
     Platform,
     ScrollView,
     useWindowDimensions,
+    TouchableOpacity
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -15,6 +16,7 @@ import { Colors, DEFAULT_FONT } from '../types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type SleepRecord = {
+    disorderLevel: number | null;
     id: string;
     uid: string;
     created_at: string;
@@ -38,7 +40,7 @@ async function generateGeminiSuggestions(record: SleepRecord): Promise<string[]>
 You are a sleep health assistant.
 Generate 3–5 short, actionable sleep improvement suggestions.
 Use bullet points. Be concise. No disclaimers.
-
+Don't use any markdown symbols that can not be rendered as simple text
 Sleep data:
 - Sleep quality: ${record.sleepQuality ?? 'unknown'}
 - Sleep duration (hours): ${record.sleepDuration ?? 'unknown'}
@@ -88,6 +90,18 @@ export default function Suggestions() {
     const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
     const [aiLoading, setAiLoading] = useState(false);
 
+    const processDisorder = (level: number) => {
+        if (level > 1.5) {
+            return "You may be at an increased risk of sleep apnea";
+        }
+
+        if (level > 0.5) {
+            return "You may be at an increased risk of insomnia";
+        }
+
+        return "Our proprietary models predict you are at perfect health";
+    };
+
     useEffect(() => {
         const fetchLatest = async () => {
             setLoading(true);
@@ -129,6 +143,20 @@ export default function Suggestions() {
 
         fetchLatest();
     }, []);
+
+    const handleGenerateAI = async () => {
+        if (!record) return;
+        setAiLoading(true);
+        try {
+            const suggestions = await generateGeminiSuggestions(record);
+            setAiSuggestions(suggestions);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
 
     return (
         <View style={{ flex: 1, backgroundColor: '#050816', paddingTop: insets.top }}>
@@ -187,34 +215,56 @@ export default function Suggestions() {
                                     <Text style={styles.metricValue}>{record.stressLevel ?? '-'}</Text>
                                 </View>
                             </View>
+                            <View style={styles.row}>
+                                <View style={styles.metric}>
+                                    <Text style={styles.metricLabel}>Sleep Disorder Diagnosis</Text>
+                                    <Text style={styles.metricValue}>{processDisorder(record.disorderLevel) ?? '-'}</Text>
+                                </View>
+                            </View>
                         </>
                     )}
                 </BlurView>
-
+{/* AI Suggestions Card */}
                 <BlurView intensity={Platform.OS === 'ios' ? 25 : 100} tint="dark" style={[styles.glassCard, { width: cardWidth }]}>
-                    <Text style={styles.sectionHeader}>AI suggestions</Text>
+                    <Text style={styles.sectionHeader}>AI SUGGESTIONS</Text>
 
                     {aiLoading ? (
-                        <ActivityIndicator color="#fff" />
+                        <ActivityIndicator color="#fff" style={{ marginVertical: 20 }} />
                     ) : aiSuggestions.length === 0 ? (
-                        <Text style={styles.emptyText}>No suggestions available</Text>
+                        <View style={styles.emptyAiState}>
+                            <Text style={styles.emptyText}>Get personalized tips based on your data.</Text>
+                            <TouchableOpacity 
+                                style={[styles.generateButton, !record && { opacity: 0.5 }]} 
+                                onPress={handleGenerateAI}
+                                disabled={!record}
+                            >
+                                <Text style={styles.generateButtonText}>Generate Tips</Text>
+                            </TouchableOpacity>
+                        </View>
                     ) : (
-                        aiSuggestions.map((s, i) => (
-                            <View key={i} style={styles.suggestionRow}>
-                                <Text style={styles.bullet}>•</Text>
-                                <Text style={styles.suggestionText}>{s}</Text>
-                            </View>
-                        ))
+                        <View>
+                            {aiSuggestions.map((s, i) => (
+                                <View key={i} style={styles.suggestionRow}>
+                                    <Text style={styles.bullet}>•</Text>
+                                    <Text style={styles.suggestionText}>{s}</Text>
+                                </View>
+                            ))}
+                            <TouchableOpacity 
+                                style={[styles.generateButton, { marginTop: 20, backgroundColor: 'transparent' }]} 
+                                onPress={handleGenerateAI}
+                            >
+                                <Text style={[styles.generateButtonText, { fontSize: 14, opacity: 0.7 }]}>Regenerate Insights</Text>
+                            </TouchableOpacity>
+                        </View>
                     )}
                 </BlurView>
             </ScrollView>
         </View>
     );
 }
-
 const styles = StyleSheet.create({
     scrollContent: { alignItems: 'center', paddingBottom: 60, paddingTop: 40 },
-    headerContainer: { marginBottom: 40, alignItems: 'center' },
+    headerContainer: { marginBottom: 40, alignItems: 'center', paddingHorizontal: 20 },
     glassCard: {
         padding: 24,
         borderRadius: 24,
@@ -227,12 +277,12 @@ const styles = StyleSheet.create({
             default: { elevation: 10 },
         }),
     },
-    title: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 40, fontWeight: '900' },
-    subtitle: { color: 'rgba(255,255,255,0.4)', fontFamily: DEFAULT_FONT, fontSize: 16, marginTop: 8 },
+    title: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 40, fontWeight: '900', textAlign: 'center' },
+    subtitle: { color: 'rgba(255,255,255,0.4)', fontFamily: DEFAULT_FONT, fontSize: 16, marginTop: 8, textAlign: 'center' },
     sectionHeader: { color: Colors.light, fontSize: 11, letterSpacing: 2.5, marginBottom: 16, opacity: 0.35 },
-    errorText: { color: '#ff5252' },
-    emptyText: { color: 'rgba(255,255,255,0.6)' },
-    row: { flexDirection: 'row', gap: 14, marginBottom: 10 },
+    errorText: { color: '#ff5252', textAlign: 'center' },
+    emptyText: { color: 'rgba(255,255,255,0.6)', marginBottom: 20, textAlign: 'center' },
+    row: { flexDirection: 'row', gap: 10, marginBottom: 10 },
     metric: {
         flex: 1,
         padding: 14,
@@ -241,9 +291,28 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.08)',
         backgroundColor: 'rgba(255,255,255,0.03)',
     },
-    metricLabel: { color: 'rgba(255,255,255,0.6)', fontSize: 12, marginBottom: 6 },
-    metricValue: { color: Colors.light, fontSize: 18 },
-    suggestionRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', marginBottom: 10 },
+    metricLabel: { color: 'rgba(255,255,255,0.6)', fontSize: 10, marginBottom: 4, textTransform: 'uppercase' },
+    metricValue: { color: Colors.light, fontSize: 16, fontWeight: '600' },
+    suggestionRow: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', marginBottom: 12 },
     bullet: { color: Colors.light, fontSize: 18, lineHeight: 22 },
-    suggestionText: { flex: 1, color: Colors.light, fontSize: 16 },
+    suggestionText: { flex: 1, color: Colors.light, fontSize: 15, lineHeight: 22, opacity: 0.9 },
+    
+    // Button Styles
+    emptyAiState: { alignItems: 'center', justifyContent: 'center' },
+    generateButton: {
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        paddingVertical: 14,
+        paddingHorizontal: 30,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.2)',
+        width: '100%',
+        alignItems: 'center',
+    },
+    generateButtonText: {
+        color: Colors.light,
+        fontSize: 16,
+        fontWeight: '700',
+        fontFamily: DEFAULT_FONT,
+    },
 });

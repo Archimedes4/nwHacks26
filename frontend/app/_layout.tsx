@@ -1,4 +1,4 @@
-import { createContext, useEffect } from 'react';
+import React, { createContext, useEffect } from 'react';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 import Header from '../components/Header';
 import '../app.css';
 import { Colors, DEFAULT_FONT } from '../types';
+import Head from "expo-router/head"
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -32,12 +33,17 @@ export default function RootLayout() {
   }
 
   return (
-    <TextStyleContext.Provider value={{ fontFamily: DEFAULT_FONT }}>
-      {/* Wrap in a View with background to prevent "flash of white" during navigation */}
-      <View style={{ flex: 1, backgroundColor: Colors.primary }}>
-        <Header />
-        <Slot />
-      </View>
-    </TextStyleContext.Provider>
+    <>
+      <Head>
+        <title>Somnia</title>
+      </Head>
+      <TextStyleContext.Provider value={{ fontFamily: DEFAULT_FONT }}>
+        {/* Wrap in a View with background to prevent "flash of white" during navigation */}
+        <View style={{ flex: 1, backgroundColor: Colors.primary }}>
+          <Header />
+          <Slot />
+        </View>
+      </TextStyleContext.Provider>
+    </>
   );
 }

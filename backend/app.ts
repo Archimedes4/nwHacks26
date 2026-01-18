@@ -11,7 +11,6 @@ const port = 3000
 
 const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
 const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
-const supabaseAdminKey = process.env.ADMIN_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -105,11 +104,27 @@ app.get('/users', authMiddleware, async (req, res) => {
 
 
 app.get('/insights', authMiddleware, async (req, res) => {
-  const { data, error } = await supabase
-  .from("insights")
-  .select("*")
-  .eq("uid", req.user.aud);  // condition
-  res.send("ok")
+  try {
+    const { data, error } = await supabase
+      .from("insights")
+      .select("*")
+      .eq("uid", req.user.aud);  // condition
+    if (error) {
+      res.send("Internal Server Error")
+      res.statusCode(500);
+      return;
+    }
+    res.json({
+      result: {
+
+      },
+      
+    })
+  } catch (e) {
+    console.error(e);
+    res.send("Internal Server Error")
+    res.statusCode(500);
+  }
 })
 
 
@@ -136,7 +151,7 @@ app.post("/insights", authMiddleware, async (req, res) => {
   // Call model service
 
   // Get the user from the server
-  let userInfo = null;
+  let userInfo: { gender: "Male" | "Female"; age: number; height: number; weight: number; } | null = null;
   if (result.data.gender === undefined || result.data.age === undefined || result.data.height === undefined || result.data.weight === undefined) {
     const userResult = await getUser(req.user.aid);
     if (!result.success) {

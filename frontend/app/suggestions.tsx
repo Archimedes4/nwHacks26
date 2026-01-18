@@ -34,31 +34,17 @@ type SleepRecord = {
 const GEMINI_API_KEY = 'AIzaSyBy8H1M6V7OCv2TFDjV3ejH61VDzRhDcGU';
 
 async function generateGeminiSuggestions(record: SleepRecord): Promise<string[]> {
-const prompt = `
+    const prompt = `
 You are a sleep health assistant.
-
-Return ONLY valid JSON in the following format:
-{
-  "insights": [
-    "string",
-    "string",
-    "string"
-  ]
-}
-
-Rules:
-- 3 to 5 insights
-- Each insight must be a complete sentence
-- Each insight must explain WHY and HOW to improve sleep
-- No markdown
-- No extra text
+Generate 3–5 short, actionable sleep improvement suggestions.
+Use bullet points. Be concise. No disclaimers.
 
 Sleep data:
-Sleep quality: ${record.sleepQuality}
-Sleep duration (hours): ${record.sleepDuration}
-Resting heart rate: ${record.restingHeartrate}
-Daily steps: ${record.dailySteps}
-Stress level: ${record.stressLevel}
+- Sleep quality: ${record.sleepQuality ?? 'unknown'}
+- Sleep duration (hours): ${record.sleepDuration ?? 'unknown'}
+- Resting heart rate: ${record.restingHeartrate ?? 'unknown'}
+- Daily steps: ${record.dailySteps ?? 'unknown'}
+- Stress level: ${record.stressLevel ?? 'unknown'}
 `;
 
     const res = await fetch(
@@ -70,7 +56,7 @@ Stress level: ${record.stressLevel}
                 contents: [{ role: 'user', parts: [{ text: prompt }] }],
                 generationConfig: {
                     temperature: 0.4,
-                    maxOutputTokens: 512,
+                    maxOutputTokens: 1000,
                 },
             }),
         }
@@ -78,12 +64,16 @@ Stress level: ${record.stressLevel}
 
     const json = await res.json();
     const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-    console.log('Gemini raw response:', JSON.stringify(json, null, 2));
 
     return text
-        .split('\n')
-        .map(s => s.replace(/^[-•]\s*/, '').trim())
-        .filter(Boolean);
+    .replace(/\*\*(.*?)\*\*/g, '$1')     // **bold**
+    .replace(/\*(.*?)\*/g, '$1')          // *italic*
+    .replace(/`(.*?)`/g, '$1')            // inline code
+    .replace(/^#+\s*/gm, '')              // headers
+    .split(/\n+|\d+\.\s+/)                // bullets OR numbered lists
+    .map(s => s.replace(/^[-•]\s*/, '').trim())
+    .filter(s => s.length > 10);
+
 }
 
 export default function Suggestions() {

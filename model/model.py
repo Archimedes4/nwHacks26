@@ -24,7 +24,7 @@ if not os.path.exists("model"):
 if not os.path.exists("output"):
     os.makedirs("output")
 
-dataset_df = pd.read_csv("input/gpt_train.csv")
+dataset_df = pd.read_csv("input/train.csv")
 
 dataset_df = dataset_df.sample(frac=1, random_state=42).reset_index(drop=True)
 
@@ -112,7 +112,7 @@ print("Encoded train shape:", X_train.shape)
 print("Encoded valid shape:", X_valid.shape)
 
 # model versions
-VERSION = "gpt_rf_1"
+VERSION = "rf_2"
 LOAD_FROM_DISK = False # if set to true, will load pretrained model so you don't have to retrain
 MODEL_PATH = f"model/{VERSION}.pkl" # otherwise will train a model and save (and overwrite) to path
 
@@ -239,7 +239,7 @@ print(f"Test R^2:  {r2:.4f}")
 
 # print(type(test_true))
 
-print(test_preds)
+# print(test_preds)
 # for idx, row in test_preds.iterrows():
 #     # if (row["Sleep Disorder"] != )
 #     print(idx, row["Quality of Sleep"], row["Sleep Disorder"])

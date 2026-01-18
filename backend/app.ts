@@ -256,13 +256,14 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
   const modelData = await modelResult.json()
 
 
-  if (modelData.predictions.length < 1 ) {
+  if (modelData.predictions.length < 2 ) {
     console.error("MODEL ERROPR")
     return res.status(500).send('Internal Server Error');
   }
 
   console.log(modelData.predictions[0]);
   const float = parseFloat(modelData.predictions[0]);
+  const float2 = parseFloat(modelData.predictions[1]);
   if (Number.isNaN(float)) {
     return res.status(500).send('Internal Server Error');
   }
@@ -282,7 +283,8 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
     dailySteps: result.data.dailySteps,
     stressLevel: result.data.stressLevel,
     date: new Date().toISOString(),
-    sleepQuality: float
+    sleepQuality: float,
+    disorderLevel: float2
   })
 
   if (error) {

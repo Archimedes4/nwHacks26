@@ -8,8 +8,9 @@ import tr from 'zod/v4/locales/tr.js';
 dotenv.config()
 
 const app = express()
-const port = 3000
-
+const port = 8082
+app.use(cors());
+app.use(express.json());
 const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
 const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
 
@@ -73,7 +74,8 @@ app.post('/users', authMiddleware, async (req: any, res) => {
     const { error } = await supabase
     .from("users")
     .insert({
-      uid: req.user.id,
+        id: randomUUID(),
+        uid: req.user.id,
       name: result.data.name,
       gender: result.data.gender,
       age: result.data.age,

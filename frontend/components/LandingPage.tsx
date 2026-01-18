@@ -1,4 +1,4 @@
-import { View, Text, useWindowDimensions, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { View, Text, useWindowDimensions, ScrollView, StyleSheet, Pressable, Platform } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Colors, DEFAULT_FONT } from '../types';
 import { Image } from 'expo-image';
@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import TestimonialCard from './TestimonialCard';
 import { BlurView } from 'expo-blur';
 import CustomButton from './CustomButton';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
 
 const TESTIMONIALS = [
     { quote: 'Somnia, made me have a good sleep during nwHacks 26. It helped me calm down and stay focused.', author: 'Andrew Mainella', stars: 5 },
@@ -109,6 +109,10 @@ export default function index() {
 
         return () => clearInterval(id);
     }, [maxScroll]);
+
+    if (Platform.OS === "ios") {
+      return <Redirect href={"/signup"}/>
+    }
 
     return (
         <ScrollView style={{ width, height, backgroundColor: Colors.primary }}>

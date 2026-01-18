@@ -1,4 +1,4 @@
-import { View, Text, useWindowDimensions, Pressable, StyleSheet } from 'react-native';
+import { View, Text, useWindowDimensions, Pressable, StyleSheet, Platform } from 'react-native';
 import React, { useState } from 'react';
 import { Colors, DEFAULT_FONT } from '../types';
 import { Link } from 'expo-router';
@@ -13,7 +13,7 @@ export default function Index() {
     const { loading, session } = useAuth();
     const insets = useSafeAreaInsets();
 
-    if (loading || session === null) {
+    if ((loading || session === null) && Platform.OS !== "ios") {
         return <LandingPage />;
     }
 

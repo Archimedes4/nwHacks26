@@ -19,7 +19,6 @@ export const TextStyleContext = createContext({ fontFamily: DEFAULT_FONT });
 
 export default function RootLayout() {
   const [activeTab, setActiveTab] = useState(0);
-  const pathname = usePathname();
   const {session, loading} = useAuth();
   const {width} = useWindowDimensions();
   const [fontsLoaded, fontError] = useFonts({
@@ -29,14 +28,14 @@ export default function RootLayout() {
     'FacultyGlyphic': require('../assets/fonts/Faculty_Glyphic/FacultyGlyphic-Regular.ttf')
   });
 
-  function call() {
-    if (activeTab === 0 && pathname !== "/") {
+  function call(tab: number) {
+    if (tab === 0) {
       router.push("/")
-    } else if (activeTab === 1 && pathname !== "/history") {
+    } else if (tab === 1) {
       router.push("/history")
-    } else if (activeTab === 2 && pathname !== "suggestions") {
+    } else if (tab === 2) {
       router.push("/suggestions")
-    } else if (activeTab === 3 && pathname !== "/account") {
+    } else if (tab === 3) {
       router.push("/account")
     }
   }
@@ -85,7 +84,7 @@ export default function RootLayout() {
                 icon: <PersonIcon width={25} height={25} color={Colors.light}/>,
               },
             ]}
-            activeIndex={activeTab} onChange={(e) => {setActiveTab(e); call()}} />
+            activeIndex={activeTab} onChange={(e) => {setActiveTab(e); call(e)}} />
           }
         </View>
       </TextStyleContext.Provider>

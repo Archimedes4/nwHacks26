@@ -38,6 +38,7 @@ export async function createUser(
         const accessToken = session?.access_token;
         if (!accessToken) return { result: loadingStateEnum.failed };
 
+        console.log("HERE")
         const res = await fetch(`${BACKEND_URL}/users`, {
             method: "POST",
             headers: {
@@ -46,6 +47,7 @@ export async function createUser(
             },
             body: JSON.stringify({ name, gender, age, height, weight }),
         });
+        console.log(res.status)
         if (!res.ok) return { result: loadingStateEnum.failed };
 
         const data = await safeJson(res);

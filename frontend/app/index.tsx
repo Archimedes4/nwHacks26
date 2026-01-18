@@ -18,6 +18,7 @@ export default function Index() {
     return <LandingPage />
   }
 
+  // This is just the home page that we will work out later
   return (
     <View style={{width, height, backgroundColor: Colors.primary}}>
       <Image

@@ -18,7 +18,15 @@ export default function Login() {
                 contentFit="cover"
                 style={{width: width, height: height}}
             />
-            <BlurView intensity={10}/>
+            <BlurView intensity={15} style={{ position:"absolute", top:0, left:0, right:0, height:"100%", width:"100%"}} />
+             <View
+                style={{
+                    position: 'absolute',
+                    width: width, height: height,
+                    backgroundColor: "rgba(0,0,0,0.3)"
+                }}
+                pointerEvents="none"
+            />
             <View style={{width, height, position: 'absolute', padding: 15}}>
               <SignUpInner />
             </View>

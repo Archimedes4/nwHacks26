@@ -24,7 +24,7 @@ if not os.path.exists("model"):
 if not os.path.exists("output"):
     os.makedirs("output")
 
-dataset_df = pd.read_csv("input/train.csv")
+dataset_df = pd.read_csv("input/gpt_train.csv")
 
 dataset_df = dataset_df.sample(frac=1, random_state=42).reset_index(drop=True)
 
@@ -46,8 +46,8 @@ bmi_dict = {
 
 disorder_dict = {
     "None": 0,
-    "Insomnia": 1000,
-    "Sleep Apnea": 2000,
+    "Insomnia": 1,
+    "Sleep Apnea": 2,
 }
 
 def preprocess(df, is_train=True):
@@ -70,7 +70,7 @@ def preprocess(df, is_train=True):
     # df[non_numeric_cols] = df[non_numeric_cols].fillna("Unknown")
 
     labels = ["Quality of Sleep", "Sleep Disorder"] # "Sleep Disorder"
-    # df = df.drop(["Sleep Disorder"], axis=1)
+    # df = df.drop(["Quality of Sleep"], axis=1)
     
     if not is_train:
         return df, None
@@ -112,7 +112,7 @@ print("Encoded train shape:", X_train.shape)
 print("Encoded valid shape:", X_valid.shape)
 
 # model versions
-VERSION = "rf_2"
+VERSION = "gpt_rf_1"
 LOAD_FROM_DISK = False # if set to true, will load pretrained model so you don't have to retrain
 MODEL_PATH = f"model/{VERSION}.pkl" # otherwise will train a model and save (and overwrite) to path
 
@@ -239,9 +239,10 @@ print(f"Test R^2:  {r2:.4f}")
 
 # print(type(test_true))
 
-for idx, row in test_preds.iterrows():
-    # if (row["Sleep Disorder"] != )
-    print(idx, row["Quality of Sleep"], row["Sleep Disorder"])
+print(test_preds)
+# for idx, row in test_preds.iterrows():
+#     # if (row["Sleep Disorder"] != )
+#     print(idx, row["Quality of Sleep"], row["Sleep Disorder"])
 
 # for i in range(1, len(test_true)):
 #     if (test_true[i][1] != round(test_preds[i][1] / 1000)):

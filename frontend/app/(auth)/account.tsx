@@ -139,20 +139,6 @@ export default function Account() {
                                 </View>
                             </View>
                         </BlurView>
-
-                        {/* Account settings card */}
-                        <BlurView intensity={Platform.OS === "ios" ? 25 : 100} tint="dark" style={[styles.glassCard, styles.cardShadow, { width: cardWidth }]}>
-                            <Text style={styles.title}>Account</Text>
-                            <Text style={styles.subtitle}>Update your details</Text>
-
-                            <InputField label="Username" placeholder="Enter username" autoCapitalize="none" autoCorrect={false} />
-                            <InputField label="Password" placeholder="Enter password" secureTextEntry />
-                            <View style={styles.button}>
-                                <View style={styles.buttonInner}>
-                                    <Text style={styles.buttonText}>Save changes</Text>
-                                </View>
-                            </View>
-                        </BlurView>
                     </ScrollView>
                 </KeyboardAvoidingView>
 
@@ -318,6 +304,6 @@ const styles = StyleSheet.create({
     },
     modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 14, alignItems: "center", borderWidth: 1 },
     modalBtnCancel: { backgroundColor: "transparent", borderColor: "rgba(255,255,255,0.18)" },
-    modalBtnSave: { backgroundColor: Colors.primary, borderColor: Colors.primary },
+    modalBtnSave: { backgroundColor: Colors.blue, borderColor: Colors.blue },
     modalBtnText: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 14, fontWeight: "900" },
 });

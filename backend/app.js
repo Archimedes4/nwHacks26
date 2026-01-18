@@ -16,6 +16,7 @@ const port = 3000;
 const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
 const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
 const supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseAnonKey);
+app.use(express_1.default.json());
 app.use((0, cors_1.default)({
     origin: "http://localhost:8081", // your frontend domain
 }));
@@ -32,6 +33,7 @@ async function authMiddleware(req, res, next) {
     }
     // attach user to request for your handlers
     req.user = user;
+    console.log(user);
     next();
 }
 const userSchema = zod_1.z.object({
@@ -42,25 +44,32 @@ const userSchema = zod_1.z.object({
     weight: zod_1.z.number().positive(),
 });
 app.post('/users', authMiddleware, async (req, res) => {
-    const result = userSchema.safeParse(req.body);
-    if (!result.success) {
-        return res.status(400).json({ error: result.error.issues });
+    try {
+        console.log(req.body);
+        const result = userSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({ error: result.error.issues });
+        }
+        const { error } = await supabase
+            .from("users")
+            .insert({
+            uid: req.user.id,
+            name: result.data.name,
+            gender: result.data.gender,
+            age: result.data.age,
+            height: result.data.height,
+            weight: result.data.weight
+        });
+        if (error) {
+            console.error(error);
+            return res.status(500).send("Internal Server Error");
+        }
+        return res.status(201).send("ok");
     }
-    const { error } = await supabase
-        .from("users")
-        .insert({
-        uid: req.user.aud,
-        name: result.data.name,
-        gender: result.data.gender,
-        age: result.data.age,
-        height: result.data.height,
-        weight: result.data.weight
-    });
-    if (error) {
-        console.error(error);
+    catch (e) {
+        console.error(e);
         return res.status(500).send("Internal Server Error");
     }
-    return res.status(201).send("ok");
 });
 exports.updateUserSchema = zod_1.z
     .object({
@@ -79,7 +88,7 @@ app.put('/users', authMiddleware, async (req, res) => {
     const { data: updatedUser, error } = await supabase
         .from("users")
         .update(result.data)
-        .eq("uid", req.user.aud)
+        .eq("uid", req.user.id)
         .select()
         .single();
     if (error) {
@@ -92,11 +101,18 @@ app.put('/users', authMiddleware, async (req, res) => {
     return res.status(200).send("ok");
 });
 app.get('/users', authMiddleware, async (req, res) => {
-    const result = await getUser(req.user.aid);
-    if (!result.success) {
-        return res.status(400);
+    try {
+        console.log('GET /users handler start');
+        const result = await getUser(req.user.aid);
+        if (!result.success) {
+            return res.status(400).send("not found");
+        }
+        return res.status(200).json(result.data);
     }
-    return res.status(200).json(result.data);
+    catch (e) {
+        console.error(e);
+        return res.status(500).send("Internal Server Error");
+    }
 });
 app.get('/insights', authMiddleware, async (req, res) => {
     try {
@@ -105,7 +121,7 @@ app.get('/insights', authMiddleware, async (req, res) => {
         let query = supabase
             .from('insights')
             .select('*')
-            .eq('uid', req.user.aud)
+            .eq('uid', req.user.id)
             .order('id', { ascending: true }) // change "id" if your cursor column is different
             .limit(100);
         // If a key is provided, only fetch rows after that key (cursor-based pagination)
@@ -175,7 +191,7 @@ app.post("/insights", authMiddleware, async (req, res) => {
         .from("insights")
         .insert({
         id: (0, crypto_1.randomUUID)(),
-        uid: req.user.aud,
+        uid: req.user.id,
         gender: result.data.gender,
         age: result.data.age,
         height: result.data.height,

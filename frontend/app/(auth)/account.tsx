@@ -22,6 +22,7 @@ import getGreeting from "@/functions/getGreeting";
 import SignOutButton from "@/components/SignOutButton";
 import { Colors, DEFAULT_FONT, loadingStateEnum, userType } from "@/types";
 import { getUserInfo } from "@/functions/user";
+import Onboarding from "@/components/Onboarding";
 
 // TODO: implement this in your auth layer (see section 2 below)
 // import { updateAccountCredentials } from "@/functions/auth";
@@ -53,6 +54,10 @@ export default function Account() {
 
   if (state === loadingStateEnum.loading) {
     return <Text>Loading...</Text>
+  }
+
+  if (state === loadingStateEnum.failed) {
+    return <Onboarding />
   }
 
   return (

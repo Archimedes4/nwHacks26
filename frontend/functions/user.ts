@@ -13,16 +13,17 @@ export async function getUserInfo(): Promise<{
     } = await supabase.auth.getSession();
 
     const accessToken = session?.access_token;
-    console.log(accessToken)
+
     if (accessToken === undefined) {
       return {
         result: loadingStateEnum.failed
       }
     }
 
+    console.log("here")
     const result = await fetch(BACKEND_URL + "/users", {
       headers: {
-        "Authentication":"Bearer " + accessToken
+        "Authorization":"Bearer " + accessToken
       }
     })
 
@@ -32,11 +33,11 @@ export async function getUserInfo(): Promise<{
       }
     }
 
-    const data = result.json()
+    const data = await result.json()
     
     return {
       result: loadingStateEnum.success,
-      data: data
+      data: data as userType
     }
   } catch {
     return {
@@ -62,7 +63,8 @@ export async function createUser(name: string, gender: "Male" | "Female", age: n
     const result = await fetch(BACKEND_URL + "/users", {
       method: "POST",
       headers: {
-        "Authentication":"Bearer " + accessToken
+        "Authorization":"Bearer " + accessToken,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         name: name,

@@ -6,6 +6,8 @@ import { LinearGradient } from 'expo-linear-gradient'
 import SignOutButton from './SignOutButton'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import CustomButton from './CustomButton'
+import { Colors, DEFAULT_FONT } from '@/types'
+import { createUser } from '@/functions/user'
 
 export default function Onboarding() {
   const {height} = useWindowDimensions();
@@ -15,6 +17,13 @@ export default function Onboarding() {
   const [userHeight, setUserHeight] = useState(0);
   const [weight, setWeight] = useState(0);
   const [age, setAge] = useState(0);
+
+  async function loadCreateUser() {
+    if (gender !== "Male" && gender !== "Female") {
+      return;
+    }
+    const result = await createUser(name, gender, age, height, weight);
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#050816" }}>
@@ -29,7 +38,7 @@ export default function Onboarding() {
       {/* Hero image background */}
       <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: height * 0.3}}>
         <Image
-          source={require("../../assets/images/Background-1.png")}
+          source={require("../assets/images/Background-1.png")}
           contentFit="cover"
           transition={600}
           style={StyleSheet.absoluteFillObject}
@@ -50,7 +59,7 @@ export default function Onboarding() {
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        style={{ flex: 1, marginTop: insets.top + height * 0.3 + 15 }}
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -58,15 +67,70 @@ export default function Onboarding() {
         <TextInput
           value={name}
           onChangeText={setName}
+          style={styles.main}
+          placeholder='Name'
+        /> 
+        <TextInput
+          value={gender}
+          onChangeText={setGender}
+          style={styles.main}
+          placeholder='Gender Male | Female'
+        /> 
+        <TextInput
+          value={userHeight.toString()}
+          onChangeText={(e) => {
+            const newHeight = parseInt(e);
+            if (!Number.isNaN(newHeight)) {
+              setUserHeight(newHeight)
+            }
+          }}
+          style={styles.main}
+          placeholder='Height'
+        /> 
+        <TextInput
+          value={weight.toString()}
+          onChangeText={(e) => {
+            const newage = parseInt(e);
+            if (!Number.isNaN(newage)) {
+              setWeight(newage)
+            }
+          }}
+          style={styles.main}
+          placeholder='Weight'
+        /> 
+        <TextInput
+          value={age.toString()}
+          onChangeText={(e) => {
+            const newage = parseInt(e);
+            if (!Number.isNaN(newage)) {
+              setAge(newage)
+            }
+          }}
+          style={styles.main}
+          placeholder='Age'
         /> 
         <CustomButton
           title="Save Info"
           onPress={() => {
-
+            loadCreateUser();
           }}
+          style={{marginHorizontal: 15}}
          />
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  main: {
+    fontFamily: DEFAULT_FONT,
+    backgroundColor: Colors.tertiary,
+    borderRadius: 15,
+    padding: 15,
+    color: Colors.light,
+    marginBottom: 10,
+    outline: 'none',
+    marginHorizontal: 15
+  }
+})

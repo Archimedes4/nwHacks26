@@ -1,37 +1,16 @@
 import { View, Text, TextInput, useWindowDimensions, Pressable, Alert, Linking } from 'react-native'
 import React, { useState } from 'react'
-import { Colors, loadingStateEnum } from '@/types';
+import { Colors, loadingStateEnum, DEFAULT_FONT } from '@/types';
 import { supabase } from '@/functions/supabase';
-import {router} from "expo-router";
+import {router, Link} from "expo-router";
+import CustomButton from "@/components/CustomButton"
+import Header from "@/components/Header"
+import {GoogleIcon} from "@/components/Icons"
 
 export default function Signup() {
     const {width, height} = useWindowDimensions();
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [state, setState] = useState(loadingStateEnum.notStarted)
 
-    async function signUpWithEmail() {
-        setState(loadingStateEnum.loading)
-        const {
-            data: { session } = {} as any,
-            error,
-        } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-        })
-        if (error) {
-            Alert.alert(error.message)
-            setState(loadingStateEnum.notStarted)
-            return
-        }
-        if (!session) {
-            Alert.alert('Please check your inbox for email verification!')
-            setState(loadingStateEnum.notStarted)
-            return
-        }
-        setState(loadingStateEnum.success)
-        router.push("/account")
-    }
+    const [state, setState] = useState(loadingStateEnum.notStarted)
 
     async function signInAnonymously() {
         setState(loadingStateEnum.loading)
@@ -68,44 +47,101 @@ export default function Signup() {
 
     return (
         <View style={{width, height, backgroundColor: Colors.primary, padding: 15}}>
-            <Text>Welcome,</Text>
+            <Header />
+            <PasswordSignUp />
+            <CustomButton
+                title="Continue As Guest"
+                Icon={() => <GoogleIcon width={30} height={30}/>}
+                onPress={() => {signInAnonymously()}}
+                style={{marginBottom: 10}}
+            />
+            <Link href="/login">
+                <Text>Already have an account? Log in</Text>
+            </Link>
+        </View>
+    )
+}
+
+
+function getSignupErrors(email: string, password: string): string[] {
+    let errors: string[] = [];
+    if (!RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(email)) {
+        errors.push("email")
+    }
+    if (!RegExp(/^.{5,}$/).test(password)) {
+        errors.push("password")
+    }
+    return errors;
+}
+
+function PasswordSignUp() {
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [state, setState] = useState(loadingStateEnum.notStarted);
+    const [showingErrors, setShowingErrors] = useState<boolean>(false);
+    const errors = useMemo(() => {
+        if (showingErrors) {
+            return getSignupErrors(email, password);
+        }
+        return [];
+    }, [email, password, showingErrors])
+
+    async function signUpWithEmail() {
+        setState(loadingStateEnum.loading)
+        if (getSignupErrors(email, password).length !== 0) {
+            setState(loadingStateEnum.notStarted);
+            setShowingErrors(true);
+            return;
+        }
+        const {
+            data: { session } = {} as any,
+            error,
+        } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+        })
+        if (error) {
+            Alert.alert(error.message)
+            setState(loadingStateEnum.notStarted)
+            return
+        }
+        if (!session) {
+            Alert.alert('Please check your inbox for email verification!')
+            setState(loadingStateEnum.notStarted)
+            return
+        }
+        setState(loadingStateEnum.success)
+        router.push("/account")
+    }
+
+    const isLoading = state === loadingStateEnum.loading
+    return (
+        <>
             <TextInput
                 value={email}
                 onChangeText={setEmail}
-                style={{fontFamily: "Playpen", backgroundColor: Colors.secondary, borderRadius: 15, padding: 10, color: Colors.light}}
+                style={{fontFamily: DEFAULT_FONT, backgroundColor: Colors.secondary, borderRadius: 15, padding: 15, color: Colors.light, marginBottom: 10, outline: "none"}}
                 placeholder='Email'
                 editable={!isLoading}
             />
+            {errors.includes("email") &&
+                <Text style={{fontFamily: DEFAULT_FONT, color: Colors.red, marginBottom: 10}}>Please enter a valid email!</Text>
+            }
             <TextInput
                 value={password}
                 onChangeText={setPassword}
-                style={{fontFamily: "Playpen", backgroundColor: Colors.secondary, borderRadius: 15, padding: 10, paddingTop: 15, color: Colors.light}}
+                style={{fontFamily: DEFAULT_FONT, backgroundColor: Colors.secondary, borderRadius: 15, padding: 15, paddingTop: 15, color: Colors.light, marginBottom: 10, outline: "none"}}
                 placeholder='Password'
                 editable={!isLoading}
             />
-            <Pressable
-                style={{padding: 10, opacity: isLoading ? 0.6 : 1}}
-                onPress={() => { signUpWithEmail() }}
-                disabled={isLoading}
-            >
-                <Text>Create Account</Text>
-            </Pressable>
-
-            <Pressable
-                style={{padding: 10, marginTop: 8, opacity: isLoading ? 0.6 : 1}}
-                onPress={() => {signInAnonymously()}}
-                disabled={isLoading}
-            >
-                <Text>Continue as Guest</Text>
-            </Pressable>
-
-            <Pressable
-                style={{padding: 10, marginTop: 8, opacity: isLoading ? 0.6 : 1}}
-                onPress={() => {signInWithGoogle()}}
-                disabled={isLoading}
-            >
-                <Text>Continue with Google</Text>
-            </Pressable>
-        </View>
+            {errors.includes("password") &&
+                <Text style={{fontFamily: DEFAULT_FONT, color: Colors.red, marginBottom: 10}}>Please enter a password that is atleast 5 characters long!</Text>
+            }
+            <CustomButton
+                title="Sign up"
+                onPress={() => {signUpWithEmail()}}
+                style={{marginBottom: 10}}
+            />
+        </>
     )
 }

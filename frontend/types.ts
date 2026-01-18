@@ -3,7 +3,8 @@ export enum Colors {
   secondary = "#64a6bd",
   tertiary = "#CE6A85",
   dark = "#3f3f37",
-  light = "#efebce"
+  light = "#efebce",
+  red = "#F54927"
 }
 
 export enum loadingStateEnum {
@@ -12,3 +13,5 @@ export enum loadingStateEnum {
   failed,
   notStarted
 }
+
+export const DEFAULT_FONT = "FacultyGlyphic"

@@ -1,6 +1,6 @@
 import { View, Text, useWindowDimensions, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { Colors } from '../types';
+import { Colors, DEFAULT_FONT } from '../types';
 import { Link, router } from 'expo-router';
 import {Image} from "expo-image";
 import LiquidGlassTabBar from '@/components/LiquidGlass';
@@ -28,17 +28,17 @@ export default function Index() {
         <Text style={{fontFamily: "Pacifico", color: Colors.light, fontSize: 45, marginTop: 10, marginHorizontal: 'auto'}}>Somnia</Text>
         <View style={{flexDirection: 'row', position: 'absolute', top: 20, right: 0}}>
           <Link href={"./login"} asChild>
-            <Text style={{fontFamily: "FacultyGlyphic", color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Login</Text>
+            <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Login</Text>
           </Link>
           <Link href={"./signup"} asChild>
             <Pressable style={{paddingHorizontal: 15, backgroundColor: Colors.secondary, height: 60, borderRadius: 30, marginVertical: 'auto', marginHorizontal: 15}}>
-              <Text style={{fontFamily: "FacultyGlyphic", color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Sign Up</Text>
+              <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 20, marginVertical: 'auto'}}>Sign Up</Text>
             </Pressable>
           </Link>
         </View>
         <Text>Your're recent advice!</Text>
         <Text>Why choose Somnia</Text>
-        <Text style={{color: Colors.light, fontFamily: "FacultyGlyphic", fontSize: 20}}>Our model built from the ground up gives you advice that you can't find anywhere else. Quickly enter small amounts of information and get pointed to the right resources to help you fix your sleep. Best part, this is all free, no sign up needed.</Text>
+        <Text style={{color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 20}}>Our model built from the ground up gives you advice that you can't find anywhere else. Quickly enter small amounts of information and get pointed to the right resources to help you fix your sleep. Best part, this is all free, no sign up needed.</Text>
         {(width < 700) &&
           <LiquidGlassTabBar
             activeIndex={activeTab}
@@ -47,22 +47,22 @@ export default function Index() {
               {
                 key: "home",
                 label: "Home",
-                icon: <HomeIcon width={20} height={20} />,
+                icon: <HomeIcon width={25} height={25} color={Colors.light}/>,
               },
               {
                 key: "advice",
                 label: "Advice",
-                icon: <AdviceIcon width={20} height={20} />,
+                icon: <AdviceIcon width={25} height={25} color={Colors.light}/>,
               },
               {
                 key: "sleep",
                 label: "Sleep",
-                icon: <SleepIcon width={20} height={20} />,
+                icon: <SleepIcon width={25} height={25} color={Colors.light}/>,
               },
               {
                 key: "profile",
                 label: "Profile",
-                icon: <PersonIcon width={20} height={20} />,
+                icon: <PersonIcon width={25} height={25} color={Colors.light}/>,
               },
             ]}
           />

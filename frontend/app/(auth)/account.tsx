@@ -3,7 +3,7 @@ import React from 'react'
 import useAuth from '@/hooks/useAuth'
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'expo-image';
-import { Colors } from '@/types';
+import { Colors, DEFAULT_FONT } from '@/types';
 import { Link } from 'expo-router';
 import getGreeting from '@/functions/getGreeting';
 import { BlurView } from 'expo-blur';
@@ -38,7 +38,7 @@ export default function Account() {
         <Text style={{fontFamily: "Pacifico", color: Colors.light, fontSize: 45, marginTop: 10, marginHorizontal: 'auto'}}>Somnia</Text>
       </View>
       <View style={{width, height, position: 'absolute', top: height * 0.125, left: 30}}>
-        <Text style={{fontFamily: "FacultyGlyphic", color: Colors.light, fontSize: 45, marginTop: 10}}>{getGreeting(new Date())} Andrew</Text>
+        <Text style={{fontFamily: DEFAULT_FONT, color: Colors.light, fontSize: 45, marginTop: 10}}>{getGreeting(new Date())} Andrew</Text>
       </View>
       <LinearGradient
         // Background Linear Gradient

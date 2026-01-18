@@ -3,10 +3,7 @@ import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import 'react-native-reanimated';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import '../app.css';
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({

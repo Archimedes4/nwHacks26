@@ -261,7 +261,7 @@ app.post("/insights", authMiddleware, async (req: any, res) => {
     return res.status(500).send('Internal Server Error');
   }
 
-  console.log(modelData.predictions[0]);
+  console.log(modelData.predictions);
   const float = parseFloat(modelData.predictions[0]);
   const float2 = parseFloat(modelData.predictions[1]);
   if (Number.isNaN(float)) {

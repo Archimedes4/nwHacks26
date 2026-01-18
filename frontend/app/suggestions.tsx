@@ -31,7 +31,7 @@ type SleepRecord = {
     gender: string | null;
 };
 
-const GEMINI_API_KEY = 'AIzaSyBy8H1M6V7OCv2TFDjV3ejH61VDzRhDcGU';
+const GEMINI_API_KEY = 'AIzaSyCK14fbp6iiBUUWk_B9bU2C5eknFZHVJsM';
 
 async function generateGeminiSuggestions(record: SleepRecord): Promise<string[]> {
     const prompt = `

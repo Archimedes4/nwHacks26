@@ -1,3 +1,4 @@
+// app/home.tsx
 import React, { useEffect, useState } from "react";
 import {
     View, Text, TouchableOpacity, StyleSheet, Alert,
@@ -59,13 +60,15 @@ export default function Home() {
         }
     };
 
+    // Normalize and persist fields
     const updateField = (field: keyof FormState, value: string) => {
         const isGender = field === "gender";
         const cleanValue = isGender ? value : value.replace(/[^0-9.]/g, "");
+        const normalized = !isGender && cleanValue === "." ? "0." : cleanValue;
         setForm(prev => {
-            const next = { ...prev, [field]: cleanValue };
+            const next = { ...prev, [field]: normalized };
             if (field === "gender" || field === "age") {
-                void persistDefaults({ [field]: cleanValue } as Partial<FormState>);
+                void persistDefaults({ [field]: normalized } as Partial<FormState>);
             }
             return next;
         });
@@ -91,7 +94,47 @@ export default function Home() {
         return null;
     };
 
+    // Collect per-field errors
+    const collectErrors = () => {
+        const fields: Array<keyof FormState> = [
+            "gender", "age", "height", "weight", "sleepDuration", "physicalActivity",
+            "restingHeartrate", "dailySteps", "stressLevel",
+        ];
+        const result: Record<keyof FormState, string | null> = {
+            gender: null, age: null, height: null, weight: null,
+            sleepDuration: null, physicalActivity: null,
+            restingHeartrate: null, dailySteps: null, stressLevel: null,
+        };
+        for (const f of fields) {
+            result[f] = getError(f, form[f]);
+        }
+        return result;
+    };
+
+    // Decide whether submission should be blocked
+    const hasErrors = () => {
+        const errs = collectErrors();
+        const required: Array<keyof FormState> = ["gender", "age", "height", "weight", "sleepDuration", "physicalActivity"];
+        for (const f of required) {
+            if (errs[f]) return true;
+        }
+        const optional: Array<keyof FormState> = ["restingHeartrate", "dailySteps", "stressLevel"];
+        for (const f of optional) {
+            if (form[f] && errs[f]) return true;
+        }
+        return false;
+    };
+
     const handlePress = async () => {
+        // Show inline errors
+        setShowErrors(true);
+
+        // Block submission if invalid
+        if (hasErrors()) {
+            Alert.alert("Error", "Please fix validation errors before continuing.");
+            return;
+        }
+
         setLoading(true);
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -124,7 +167,7 @@ export default function Home() {
         }
     };
 
-return (
+    return (
         <View style={{ flex: 1, backgroundColor: '#050816' }}>
             <LinearGradient colors={['#1f2c7b', '#0e1635', '#050816']} style={StyleSheet.absoluteFill} />
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>

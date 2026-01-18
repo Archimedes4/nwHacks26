@@ -93,3 +93,31 @@ export async function createUser(name: string, gender: "Male" | "Female", age: n
     }
   }
 }
+
+type ProfileDefaults = { gender?: "Male" | "Female"; age?: number };
+
+export async function getProfileDefaults(): Promise<ProfileDefaults> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return {};
+    const { data, error } = await supabase
+        .from("profiles")
+        .select("gender, age")
+        .eq("user_id", user.id)
+        .single();
+    if (error) return {};
+    return { gender: data?.gender ?? undefined, age: data?.age ?? undefined };
+}
+
+export async function upsertProfileDefaults(next: ProfileDefaults) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("No user");
+    const { error } = await supabase
+        .from("profiles")
+        .upsert({
+            user_id: user.id,
+            gender: next.gender ?? null,
+            age: next.age ?? null,
+            updated_at: new Date().toISOString(),
+        }, { onConflict: "user_id" });
+    if (error) throw error;
+}

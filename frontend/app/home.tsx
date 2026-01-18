@@ -138,16 +138,16 @@ export default function Home() {
                         <View style={styles.grid}>
                             <View style={styles.column}>
                                 <Text style={styles.sectionHeader}>Activity Log</Text>
-                                <InputField label="Sleep Duration" value={form.sleepDuration} onChangeText={(v) => updateField('sleepDuration', v)} placeholder="Total hours" showError={showErrors} error={getError('sleepDuration', form.sleepDuration)} />
-                                <InputField label="Exercise Minutes" value={form.physicalActivity} onChangeText={(v) => updateField('physicalActivity', v)} placeholder="Mins active" showError={showErrors} error={getError('physicalActivity', form.physicalActivity)} />
-                                <InputField label="Daily Steps" value={form.dailySteps} onChangeText={(v) => updateField('dailySteps', v)} placeholder="e.g. 10000" showError={showErrors} error={getError('dailySteps', form.dailySteps)} />
+                                <InputField label="Sleep Duration" value={form.sleepDuration} onChangeText={(v: string) => updateField('sleepDuration', v)} placeholder="Total hours" showError={showErrors} error={getError('sleepDuration', form.sleepDuration)} />
+                                <InputField label="Exercise Minutes" value={form.physicalActivity} onChangeText={(v: string) => updateField('physicalActivity', v)} placeholder="Mins active" showError={showErrors} error={getError('physicalActivity', form.physicalActivity)} />
+                                <InputField label="Daily Steps" value={form.dailySteps} onChangeText={(v: string) => updateField('dailySteps', v)} placeholder="e.g. 10000" showError={showErrors} error={getError('dailySteps', form.dailySteps)} />
                             </View>
 
                             <View style={styles.column}>
                                 <Text style={styles.sectionHeader}>Biometrics</Text>
                                 <View style={styles.row}>
-                                    <InputField label="Resting HR" value={form.restingHeartrate} onChangeText={(v) => updateField('restingHeartrate', v)} placeholder="BPM" showError={showErrors} error={getError('restingHeartrate', form.restingHeartrate)} containerStyle={{flex: 1, marginRight: 12}} />
-                                    <InputField label="Stress" value={form.stressLevel} onChangeText={(v) => updateField('stressLevel', v)} placeholder="1-10" showError={showErrors} error={getError('stressLevel', form.stressLevel)} containerStyle={{flex: 1}} />
+                                    <InputField label="Resting HR" value={form.restingHeartrate} onChangeText={(v: string) => updateField('restingHeartrate', v)} placeholder="BPM" showError={showErrors} error={getError('restingHeartrate', form.restingHeartrate)} containerStyle={{flex: 1, marginRight: 12}} />
+                                    <InputField label="Stress" value={form.stressLevel} onChangeText={(v: string) => updateField('stressLevel', v)} placeholder="1-10" showError={showErrors} error={getError('stressLevel', form.stressLevel)} containerStyle={{flex: 1}} />
                                 </View>
                                 
                                 <View style={styles.infoBox}>

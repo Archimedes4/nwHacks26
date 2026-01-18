@@ -142,7 +142,7 @@ export default function Suggestions() {
                                     <Text style={styles.metricValue}>{record.sleepQuality ?? '-'}</Text>
                                 </View>
                                 <View style={styles.metric}>
-                                    <Text style={styles.metricLabel}>Sleep \((h)\)</Text>
+                                    <Text style={styles.metricLabel}>Sleep (h)</Text>
                                     <Text style={styles.metricValue}>{record.sleepDuration ?? '-'}</Text>
                                 </View>
                             </View>

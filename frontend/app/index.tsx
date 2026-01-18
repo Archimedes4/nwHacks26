@@ -45,10 +45,10 @@ export default function Index() {
                         </Pressable>
                     </Link>
 
-                    <Link href="/record" asChild>
+                    <Link href="/history" asChild>
                         <Pressable style={styles.card}>
                             <SleepIcon width={28} height={28} color={Colors.light} />
-                            <Text style={styles.cardText}>Record</Text>
+                            <Text style={styles.cardText}>History</Text>
                         </Pressable>
                     </Link>
 

@@ -32,8 +32,8 @@ export default function RootLayout() {
   function call() {
     if (activeTab === 0 && pathname !== "/") {
       router.push("/")
-    } else if (activeTab === 1 && pathname !== "/record") {
-      router.push("/record")
+    } else if (activeTab === 1 && pathname !== "/history") {
+      router.push("/history")
     } else if (activeTab === 2 && pathname !== "suggestions") {
       router.push("/suggestions")
     } else if (activeTab === 3 && pathname !== "/account") {

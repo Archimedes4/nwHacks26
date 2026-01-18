@@ -6,20 +6,23 @@ export default function CustomButton({
   title,
   onPress,
   Icon,
-  style
+  style,
+  disabled
 }:{
   title: string;
   onPress: () => void;
   Icon?: () => React.ReactNode;
-  style?: ViewStyle
+  style?: ViewStyle;
+  disabled?: boolean
 }) {
   return (
     <Pressable
       style={[{borderRadius: 15, padding: 10, backgroundColor: Colors.light, flexDirection: 'row'}, style]}
       onPress={onPress}
+      disabled={disabled}
     >
       {Icon && <Icon />}
-      <Text style={{marginLeft: Icon ? 10:0, marginVertical: 'auto', fontFamily: DEFAULT_FONT}}>{title}</Text>
+      <Text style={{marginLeft: Icon ? 10:0, marginVertical: 'auto', fontFamily: DEFAULT_FONT, color: Colors.dark}}>{title}</Text>
     </Pressable>
   )
 }

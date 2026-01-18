@@ -4,7 +4,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import 'react-native-reanimated';
 import Header from '../components/Header';
-import { View } from 'react-native'
 import '../app.css';
 import { Colors, DEFAULT_FONT } from '../types';
 

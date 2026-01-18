@@ -7,6 +7,7 @@ import { Colors, DEFAULT_FONT } from '@/types';
 import { Link } from 'expo-router';
 import getGreeting from '@/functions/getGreeting';
 import { BlurView } from 'expo-blur';
+import SignOutButton from '@/components/SignOutButton';
 
 export default function Account() {
   const {session, loading} = useAuth();
@@ -45,9 +46,7 @@ export default function Account() {
         <Text>Hello {session?.user.email},</Text>
         <Text>Your information</Text>
         <Text>Gender</Text>
-        <Pressable>
-          <Text>Log out</Text>
-        </Pressable>  
+        <SignOutButton />
       </View>
       
     </ScrollView>

@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "Food-Spoilage",
-    "slug": "Food-Spoilage",
+    "name": "Somnia",
+    "slug": "Somnia",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "foodspoilage",
+    "scheme": "somnia",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.archimedes4.Somnia"
     },
     "android": {
       "adaptiveIcon": {

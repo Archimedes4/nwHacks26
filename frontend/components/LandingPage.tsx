@@ -1,11 +1,9 @@
-import { View, Text, useWindowDimensions, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, useWindowDimensions, ScrollView, StyleSheet } from 'react-native';
 import React from 'react';
 import { Colors, DEFAULT_FONT } from '../types';
-import { Link } from 'expo-router';
 import { Image } from 'expo-image';
 import { AdviceIcon, SleepIcon, TVIcon } from './Icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import Header from './Header';
 
 import TestimonialCard from "./TestimonialCard"
 
@@ -129,7 +127,8 @@ export default function index() {
                   color: Colors.light,
                   fontFamily: DEFAULT_FONT,
                   fontSize: 20,
-                  flexDirection: 'row'
+                  flexDirection: 'row',
+                  marginHorizontal: 'auto'
                 }}>
                 Sleep Advice
               </Text>
@@ -141,7 +140,8 @@ export default function index() {
                   color: Colors.light,
                   fontFamily: DEFAULT_FONT,
                   fontSize: 20,
-                  flexDirection: 'row'
+                  flexDirection: 'row',
+                  marginHorizontal: 'auto'
                 }}>
                 Sleep Tracking
               </Text>
@@ -153,7 +153,8 @@ export default function index() {
                   color: Colors.light,
                   fontFamily: DEFAULT_FONT,
                   fontSize: 20,
-                  flexDirection: 'row'
+                  flexDirection: 'row',
+                  marginHorizontal: 'auto'
                 }}>
                 Sleep Content
               </Text>
@@ -177,7 +178,7 @@ export default function index() {
               fontSize: 20,
               marginHorizontal: 30
             }}>
-            Our model built from the ground up gives you advice that you can't find anywhere else.
+            Our model built from the ground up gives you advice that you can&apos;t find anywhere else.
             Quickly enter small amounts of information and get pointed to the right resources to
             help you fix your sleep. Best part, this is all free, no sign up needed.
           </Text>

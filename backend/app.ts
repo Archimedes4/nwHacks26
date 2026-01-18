@@ -3,7 +3,6 @@ import {createClient} from '@supabase/supabase-js'
 import {z} from "zod";
 import dotenv from 'dotenv';
 import { randomUUID } from "crypto";
-import {userType} from "../frontend/types"
 dotenv.config()
 
 const app = express()
@@ -13,6 +12,15 @@ const supabaseUrl = "https://yqnwqmihdkikekkfprzu.supabase.co";
 const supabaseAnonKey = "sb_secret_Yw1RFmEAI4GKjjl-tWuKWQ_9pKk2M20";
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+type userType = {
+  uid: string;
+  name: string,
+  gender: "Male" | "Female",
+  age: number,
+  height: number,
+  weight: number,
+}
 
 async function authMiddleware(req, res, next) {
   const auth = req.headers.authorization;
@@ -43,7 +51,7 @@ const userSchema = z.object({
   weight: z.number().positive(),
 });
 
-app.post('/users', authMiddleware, async (req, res) => {
+app.post('/users', authMiddleware, async (req: any, res) => {
   const result = userSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -63,13 +71,11 @@ app.post('/users', authMiddleware, async (req, res) => {
 
   if (error) {
     console.error(error)
-    res.send("Internal Server Error")
-    res.statusCode(500);
-    return;
+    return res.status(500).send("Internal Server Error");
+
   }
 
-  res.send("ok");
-  res.statusCode(201)
+  return res.status(201).send("ok");
 })
 
 export const updateUserSchema = z
@@ -84,48 +90,82 @@ export const updateUserSchema = z
     (data) => Object.keys(data).length > 0,
     "At least one field is required"
   );
-app.put('/users', authMiddleware, (req, res) => {
+app.put('/users', authMiddleware, async (req: any, res) => {
   const result = updateUserSchema.safeParse(req.body);
 
   if (!result.success) {
     return res.status(400).json({ error: result.error.issues });
   }
 
-  res.send("ok");
-})
+  const { data: updatedUser, error } = await supabase
+    .from("users")
+    .update(result.data)
+    .eq("uid", req.user.aud)
+    .select()
+    .single();
 
-app.get('/users', authMiddleware, async (req, res) => {
+  if (error) {
+    console.error(error);
+    return res.status(500).send("Internal Server Error");
+  }
+
+  if (!updatedUser) {
+    return res.status(404).send("User not found");
+  }
+
+  return res.status(200).send("ok");
+});
+
+app.get('/users', authMiddleware, async (req: any, res) => {
   const result = await getUser(req.user.aid);
   if (!result.success) {
-    res.statusCode(400);
-    
+    return res.status(400);
   }
+  return res.status(200).json(result.data!);
 })
 
 
-app.get('/insights', authMiddleware, async (req, res) => {
+app.get('/insights', authMiddleware, async (req: any, res) => {
   try {
-    const { data, error } = await supabase
-      .from("insights")
-      .select("*")
-      .eq("uid", req.user.aud);  // condition
-    if (error) {
-      res.send("Internal Server Error")
-      res.statusCode(500);
-      return;
-    }
-    res.json({
-      result: {
+    const { key } = req.query as { key?: string };
 
+    // Base query
+    let query = supabase
+      .from('insights')
+      .select('*')
+      .eq('uid', req.user.aud)
+      .order('id', { ascending: true }) // change "id" if your cursor column is different
+      .limit(100);
+
+    // If a key is provided, only fetch rows after that key (cursor-based pagination)
+    if (key) {
+      query = query.gt('id', key); // or .lt depending on your pagination direction
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error(error);
+      return res.status(500).send('Internal Server Error');
+    }
+
+    const results = data || [];
+
+    // lastKey is the cursor for the next page
+    const lastKey =
+      results.length > 0 ? String(results[results.length - 1].id) : null;
+
+    return res.status(200).json({
+      result: {
+        results,
+        lastKey,
       },
-      
-    })
+    });
   } catch (e) {
     console.error(e);
-    res.send("Internal Server Error")
-    res.statusCode(500);
+    return res.status(500).send('Internal Server Error');
   }
-})
+});
 
 
 export const healthDataSchema = z.object({
@@ -141,7 +181,7 @@ export const healthDataSchema = z.object({
   dailySteps: z.number().int().min(0).nullable().optional(),
   stressLevel: z.number().int().min(1).max(10).nullable().optional(),
 });
-app.post("/insights", authMiddleware, async (req, res) => {
+app.post("/insights", authMiddleware, async (req: any, res) => {
   const result = healthDataSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -155,9 +195,7 @@ app.post("/insights", authMiddleware, async (req, res) => {
   if (result.data.gender === undefined || result.data.age === undefined || result.data.height === undefined || result.data.weight === undefined) {
     const userResult = await getUser(req.user.aid);
     if (!result.success) {
-      res.send("User not found")
-      res.statusCode(404);
-      return;
+      return res.status(404).send("User not found");
     }
     userInfo = {
       gender: result.data.gender ? result.data.gender:userResult.data!.gender,
@@ -194,13 +232,10 @@ app.post("/insights", authMiddleware, async (req, res) => {
 
   if (error) {
     console.error(error)
-    res.send("Internal Server Error")
-    res.statusCode(500);
-    return;
+    return res.status(500).send("Internal Server Error");
   }
 
-  res.send("ok");
-  res.statusCode(201)
+  return   res.status(201).send("ok");
 })
 
 app.listen(port, () => {

@@ -10,6 +10,12 @@
     "zod": "^4.3.5"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.9",
+    "typescript": "^5.9.3"
   }
 }

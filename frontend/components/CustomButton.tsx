@@ -12,7 +12,7 @@ export default function CustomButton({
   title: string;
   onPress: () => void;
   Icon?: () => React.ReactNode;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[];
   disabled?: boolean
 }) {
   return (

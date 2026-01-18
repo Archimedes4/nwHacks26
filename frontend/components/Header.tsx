@@ -1,4 +1,4 @@
-import { View, Text, Pressable, useWindowDimensions, Image } from "react-native";
+import { View, Text, Pressable, useWindowDimensions, Image, Platform } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
 import { Colors, DEFAULT_FONT } from "@/types";
@@ -46,6 +46,7 @@ export default function Header() {
             <View style={{ flex: 1 }} />
 
             {/* Right: auth actions */}
+            {Platform.OS !== "ios" && <>
             {session === null ? (
                 <View style={{ flexDirection: "row" }}>
                     <Link href={"./login"} asChild>
@@ -109,7 +110,7 @@ export default function Header() {
                     </Link>
                     <SignOutButton />
                 </View>
-            )}
+            )}</>}
         </View>
     );
 }

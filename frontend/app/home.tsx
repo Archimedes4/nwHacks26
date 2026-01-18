@@ -9,6 +9,7 @@ import { BlurView } from "expo-blur";
 import { Colors, DEFAULT_FONT } from "../types";
 import { supabase } from "@/functions/supabase";
 import { getProfileDefaults, upsertProfileDefaults } from "@/functions/user";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type FormState = {
     gender: string;
@@ -27,6 +28,7 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [showErrors, setShowErrors] = useState(false);
     const cardWidth = Math.min(width * 0.95, 850);
+    const insets = useSafeAreaInsets();
 
     const [form, setForm] = useState<FormState>({
         gender: "", age: "", height: "", weight: "",
@@ -168,7 +170,7 @@ export default function Home() {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#050816' }}>
+        <View style={{ flex: 1, backgroundColor: '#050816', paddingTop: insets.top }}>
             <LinearGradient colors={['#1f2c7b', '#0e1635', '#050816']} style={StyleSheet.absoluteFill} />
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
         })
     },
     title: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 48, fontWeight: '900', letterSpacing: -2 },
-    subtitle: { color: 'rgba(255, 255, 255, 0.4)', fontFamily: DEFAULT_FONT, fontSize: 20, marginTop: 10 },
+    subtitle: { color: 'rgba(255, 255, 255, 0.4)', fontFamily: DEFAULT_FONT, fontSize: 20, marginTop: 10, marginHorizontal: 15 },
     grid: { flexDirection: Platform.OS === 'web' ? 'row' : 'column', gap: 40, marginBottom: 30 },
     column: { flex: 1 },
     sectionHeader: { color: Colors.light, fontSize: 11, textTransform: 'uppercase', letterSpacing: 2.5, marginBottom: 24, opacity: 0.35 },

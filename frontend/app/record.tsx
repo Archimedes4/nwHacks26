@@ -5,6 +5,7 @@ import { BlurView } from 'expo-blur';
 import Svg, { Polyline, Line, G, Text as SvgText, Circle } from 'react-native-svg';
 import { Colors, DEFAULT_FONT } from '../types';
 import { supabase } from '@/functions/supabase';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type SleepRecord = {
     id: string; // UUID
@@ -30,6 +31,8 @@ export default function Records() {
     const [loading, setLoading] = useState(true);
     const [records, setRecords] = useState<SleepRecord[]>([]);
     const [error, setError] = useState<string | null>(null);
+
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         const fetchRecords = async () => {
@@ -140,7 +143,7 @@ export default function Records() {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#050816' }}>
+        <View style={{ flex: 1, backgroundColor: '#050816', paddingTop: insets.top }}>
             <LinearGradient colors={['#1f2c7b', '#0e1635', '#050816']} style={StyleSheet.absoluteFill} />
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={[styles.headerContainer, { marginTop: 50 }]}>
@@ -206,7 +209,7 @@ const styles = StyleSheet.create({
     },
     title: { color: Colors.light, fontFamily: DEFAULT_FONT, fontSize: 40, fontWeight: '900', letterSpacing: -1 },
     subtitle: { color: 'rgba(255, 255, 255, 0.4)', fontFamily: DEFAULT_FONT, fontSize: 16, marginTop: 8 },
-    sectionHeader: { color: Colors.light, fontSize: 11, textTransform: 'uppercase', letterSpacing: 2.5, marginBottom: 16, opacity: 0.35 },
+    sectionHeader: { color: Colors.light, fontSize: 11, textTransform: 'uppercase', letterSpacing: 2.5, marginBottom: 16, opacity: 0.35, marginHorizontal: 15 },
     errorText: { color: '#ff5252' },
     emptyText: { color: 'rgba(255,255,255,0.6)' },
     table: { marginTop: 8 },

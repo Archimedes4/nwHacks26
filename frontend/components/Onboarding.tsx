@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, DEFAULT_FONT, loadingStateEnum } from '@/types';
 import { createUser } from '@/functions/user';
 import HeaderSpacer from "@/components/HeaderSpacer";
+import SignOutButton from './SignOutButton';
 
 export default function Onboarding({ done }: { done: (name: string, gender: string, age: number, height: number, weight: number) => void }) {
     const { width } = useWindowDimensions();
@@ -126,6 +127,9 @@ export default function Onboarding({ done }: { done: (name: string, gender: stri
                                 {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Save info</Text>}
                             </Pressable>
                         </View>
+                        {Platform.OS === "ios" &&
+                          <SignOutButton style={{marginTop: 15, marginHorizontal: 0}}/>
+                        }
                     </BlurView>
                 </ScrollView>
             </KeyboardAvoidingView>

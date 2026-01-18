@@ -92,6 +92,8 @@ function PasswordLogin({setState}:{setState: (e: loadingStateEnum) => void;}) {
                 style={{fontFamily: DEFAULT_FONT, backgroundColor: Colors.tertiary, borderRadius: 15, padding: 15, color: Colors.light, marginBottom: 10, outline: "none"}}
                 placeholder='Email'
                 placeholderTextColor={Colors.light}
+                autoCapitalize="none"
+                autoComplete="email"
             />
             {errors.includes("email") &&
                 <Text style={{fontFamily: DEFAULT_FONT, color: Colors.red, marginBottom: 10}}>Please enter a valid email!</Text>

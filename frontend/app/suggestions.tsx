@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { supabase } from '@/functions/supabase';
 import { Colors, DEFAULT_FONT } from '../types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type SleepRecord = {
     id: string;
@@ -29,6 +30,7 @@ export default function Suggestions() {
     const [loading, setLoading] = useState(true);
     const [record, setRecord] = useState<SleepRecord | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         const fetchLatest = async () => {
@@ -111,7 +113,7 @@ export default function Suggestions() {
     }, [record]);
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#050816' }}>
+        <View style={{ flex: 1, backgroundColor: '#050816', paddingTop: insets.top }}>
             <LinearGradient colors={['#1f2c7b', '#0e1635', '#050816']} style={StyleSheet.absoluteFill} />
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>

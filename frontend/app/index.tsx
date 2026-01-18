@@ -6,11 +6,12 @@ import { Image } from 'expo-image';
 import LandingPage from '@/components/LandingPage';
 import { HomeIcon, PersonIcon, SleepIcon, BulbIcon } from '@/components/Icons';
 import useAuth from '@/hooks/useAuth';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Index() {
     const { width, height } = useWindowDimensions();
-    const [activeTab, setActiveTab] = useState(0);
     const { loading, session } = useAuth();
+    const insets = useSafeAreaInsets();
 
     if (loading || session === null) {
         return <LandingPage />;
@@ -24,7 +25,7 @@ export default function Index() {
                 transition={1000}
                 style={{ width, height }}
             />
-            <View style={{ width, height, position: 'absolute', paddingHorizontal: 20, paddingTop: 100 }}>
+            <View style={{ width, height, position: 'absolute', paddingHorizontal: 20, paddingTop: 100 + insets.top }}>
                 <Text style={styles.title}>Your recent advice</Text>
                 <Text style={styles.subtitle}>Quick navigation</Text>
 

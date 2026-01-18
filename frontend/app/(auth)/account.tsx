@@ -57,7 +57,17 @@ export default function Account() {
   }
 
   if (state === loadingStateEnum.failed) {
-    return <Onboarding />
+    return <Onboarding done={(name, gender, age, height, weight) => {
+      setUser({
+        uid: "",
+        name,
+        gender: gender as "Male" | "Female",
+        age,
+        height,
+        weight
+      })
+      setState(loadingStateEnum.success)
+    }}/>
   }
 
   return (
@@ -85,6 +95,10 @@ export default function Account() {
             { backgroundColor: "rgba(0,0,0,0.22)" },
           ]}
         />
+      </View>
+
+      <View style={{ paddingHorizontal: 24, marginBottom: 18, marginTop: 150}}>
+        <Text style={styles.heroTitle}>{getGreeting(new Date())} {user?.name ?? ""}</Text>
       </View>
 
       {/* Top-right Sign out overlay */}

@@ -103,7 +103,7 @@ app.put('/users', authMiddleware, async (req, res) => {
 app.get('/users', authMiddleware, async (req, res) => {
     try {
         console.log('GET /users handler start');
-        const result = await getUser(req.user.aid);
+        const result = await getUser(req.user.id);
         if (!result.success) {
             return res.status(400).send("not found");
         }
@@ -215,6 +215,7 @@ app.listen(port, () => {
 });
 async function getUser(uid) {
     try {
+        console.log("Searching for", uid);
         const { data, error } = await supabase
             .from("users")
             .select("*")

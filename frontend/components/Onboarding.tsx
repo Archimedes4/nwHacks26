@@ -6,10 +6,10 @@ import { LinearGradient } from 'expo-linear-gradient'
 import SignOutButton from './SignOutButton'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import CustomButton from './CustomButton'
-import { Colors, DEFAULT_FONT } from '@/types'
+import { Colors, DEFAULT_FONT, loadingStateEnum } from '@/types'
 import { createUser } from '@/functions/user'
 
-export default function Onboarding() {
+export default function Onboarding({done}:{done: (name: string, gender: string, age: number, height: number, weight: number) => void}) {
   const {height} = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [name, setName] = useState<string>("");
@@ -23,6 +23,9 @@ export default function Onboarding() {
       return;
     }
     const result = await createUser(name, gender, age, height, weight);
+    if (result.result === loadingStateEnum.success) {
+      done(name, gender, age, height, weight);
+    }
   }
 
   return (

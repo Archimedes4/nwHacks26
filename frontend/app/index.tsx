@@ -1,5 +1,5 @@
 import { View, Text, useWindowDimensions, Pressable, StyleSheet, Platform } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Colors, DEFAULT_FONT } from '../types';
 import { Link } from 'expo-router';
 import { Image } from 'expo-image';
@@ -13,8 +13,14 @@ export default function Index() {
     const { width, height } = useWindowDimensions();
     const { loading, session } = useAuth();
     const insets = useSafeAreaInsets();
+    const [mount, setMount] = useState(false);
 
-    if ((loading || session === null) && Platform.OS !== "ios") {
+
+    useEffect(() => {
+      setMount(true)
+    }, [])
+
+    if ((loading || session === null) && Platform.OS !== "ios" && mount) {
         return <LandingPage />;
     }
 
